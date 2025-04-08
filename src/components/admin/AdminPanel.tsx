@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
 import { 
   BarChart, 
   ChevronDown, 
@@ -13,6 +14,7 @@ import {
   FileText, 
   Key, 
   Lock, 
+  MoreVertical,
   Settings, 
   Shield, 
   Upload, 
