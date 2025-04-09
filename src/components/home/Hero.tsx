@@ -1,4 +1,3 @@
-
 import { Button } from '@/components/ui/button';
 import { ArrowRight, ShieldCheck, AlertTriangle } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -7,21 +6,21 @@ export default function Hero() {
   const [zoomLevel, setZoomLevel] = useState(1);
   const [panPosition, setPanPosition] = useState({ x: 0, y: 0 });
   
-  // Extremely subtle camera movement effect
+  // Enhanced subtle camera movement effect
   useEffect(() => {
     const zoomInterval = setInterval(() => {
       setZoomLevel(prev => {
-        // Very small oscillation between 1 and 1.02
-        return prev >= 1.02 ? 1 : prev + 0.0002;
+        // Increased oscillation between 1 and 1.05
+        return prev >= 1.05 ? 1 : prev + 0.0005;
       });
     }, 50);
     
     const panInterval = setInterval(() => {
       setPanPosition(prev => {
-        // Very subtle panning effect
+        // Slightly more noticeable panning effect
         return {
-          x: prev.x >= 0.3 ? 0 : prev.x + 0.005,
-          y: prev.y >= 0.2 ? 0 : prev.y + 0.003
+          x: prev.x >= 0.8 ? 0 : prev.x + 0.01,
+          y: prev.y >= 0.5 ? 0 : prev.y + 0.008
         };
       });
     }, 100);
@@ -37,7 +36,7 @@ export default function Hero() {
       {/* Video Background with overlay */}
       <div className="absolute inset-0 z-0" style={{
         transform: `scale(${zoomLevel}) translate(${panPosition.x}%, ${panPosition.y}%)`,
-        transition: 'transform 2s ease-out'
+        transition: 'transform 0.5s ease-out' // Reduced transition time for more visible movement
       }}>
         <div className="absolute inset-0 bg-black/80 z-10"></div>
         <div className="w-full h-full bg-gradient-to-br from-black to-gray-900"></div>
@@ -47,6 +46,9 @@ export default function Hero() {
         
         {/* Grid pattern overlay */}
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiMyMDIwMjAiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djI2aDI0VjM0SDM2ek0xMCAxMHYyNmgyNlYxMEgxMHoiLz48L2c+PC9nPjwvc3ZnPg==')]"></div>
+        
+        {/* Added scanline effect */}
+        <div className="scanline"></div>
       </div>
       
       <div className="container relative z-10 pt-20 pb-16 md:pt-32 md:pb-24">
