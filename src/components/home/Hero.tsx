@@ -1,12 +1,44 @@
 
 import { Button } from '@/components/ui/button';
 import { ArrowRight, ShieldCheck, AlertTriangle } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 export default function Hero() {
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [panPosition, setPanPosition] = useState({ x: 0, y: 0 });
+  
+  // Extremely subtle camera movement effect
+  useEffect(() => {
+    const zoomInterval = setInterval(() => {
+      setZoomLevel(prev => {
+        // Very small oscillation between 1 and 1.02
+        return prev >= 1.02 ? 1 : prev + 0.0002;
+      });
+    }, 50);
+    
+    const panInterval = setInterval(() => {
+      setPanPosition(prev => {
+        // Very subtle panning effect
+        return {
+          x: prev.x >= 0.3 ? 0 : prev.x + 0.005,
+          y: prev.y >= 0.2 ? 0 : prev.y + 0.003
+        };
+      });
+    }, 100);
+    
+    return () => {
+      clearInterval(zoomInterval);
+      clearInterval(panInterval);
+    };
+  }, []);
+  
   return (
     <div className="relative overflow-hidden">
       {/* Video Background with overlay */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0" style={{
+        transform: `scale(${zoomLevel}) translate(${panPosition.x}%, ${panPosition.y}%)`,
+        transition: 'transform 2s ease-out'
+      }}>
         <div className="absolute inset-0 bg-black/80 z-10"></div>
         <div className="w-full h-full bg-gradient-to-br from-black to-gray-900"></div>
         
@@ -18,6 +50,17 @@ export default function Hero() {
       </div>
       
       <div className="container relative z-10 pt-20 pb-16 md:pt-32 md:pb-24">
+        {/* Recording indicator */}
+        <div className="absolute top-4 right-4 md:top-8 md:right-8 flex items-center gap-2 bg-black/40 backdrop-blur-sm px-3 py-1 rounded-md border border-gray-800">
+          <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
+          <span className="text-xs font-mono text-red-500">REC</span>
+        </div>
+        
+        {/* Camera ID */}
+        <div className="absolute top-4 left-4 md:top-8 md:left-8 bg-black/40 backdrop-blur-sm px-3 py-1 rounded-md border border-gray-800">
+          <span className="text-xs font-mono text-gray-400">CAM-01</span>
+        </div>
+        
         <div className="max-w-3xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-black/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
             <span className="w-2 h-2 bg-primary rounded-full animate-pulse"></span>

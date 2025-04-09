@@ -95,3 +95,42 @@
     @apply absolute border-2 border-primary rounded-md animate-pulse;
   }
 }
+
+/* CCTV Effects */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.rec-indicator {
+  animation: blink 2s infinite;
+}
+
+@keyframes scanline {
+  0% { 
+    transform: translateY(-100%);
+    opacity: 0; 
+  }
+  10% { 
+    opacity: 0.3; 
+  }
+  80% { 
+    opacity: 0.3; 
+  }
+  100% { 
+    transform: translateY(100%);
+    opacity: 0; 
+  }
+}
+
+.scanline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  opacity: 0.3;
+  z-index: 20;
+  animation: scanline 8s linear infinite;
+}
