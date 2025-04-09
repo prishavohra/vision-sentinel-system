@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,7 +31,7 @@ export default function AdminPanel() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
-        <div className="bg-sentinel-dark/10 text-sentinel-dark p-2 rounded-md">
+        <div className="bg-primary/10 text-primary p-2 rounded-md">
           <Shield className="h-5 w-5" />
         </div>
         <div>
@@ -44,10 +43,9 @@ export default function AdminPanel() {
       </div>
       
       <Tabs defaultValue="dashboard">
-        <TabsList className="grid grid-cols-5 w-full max-w-3xl">
+        <TabsList className="grid grid-cols-4 w-full max-w-3xl">
           <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
           <TabsTrigger value="users">Users</TabsTrigger>
-          <TabsTrigger value="embeddings">Embeddings</TabsTrigger>
           <TabsTrigger value="reports">Reports</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
@@ -59,10 +57,6 @@ export default function AdminPanel() {
           
           <TabsContent value="users">
             <UserManagement />
-          </TabsContent>
-          
-          <TabsContent value="embeddings">
-            <EmbeddingsManagement />
           </TabsContent>
           
           <TabsContent value="reports">
@@ -274,93 +268,6 @@ function UserManagement() {
   );
 }
 
-function EmbeddingsManagement() {
-  return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Face Embeddings</CardTitle>
-              <CardDescription>Manage face recognition data</CardDescription>
-            </div>
-            <Button>
-              <Upload className="h-4 w-4 mr-2" />
-              Upload New
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Total Embeddings</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">512</div>
-                  <p className="text-xs text-muted-foreground mt-1">Across all categories</p>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Model Version</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">v2.4.1</div>
-                  <p className="text-xs text-muted-foreground mt-1">Last updated Apr 1, 2023</p>
-                </CardContent>
-              </Card>
-            </div>
-            
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Recent Uploads</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="flex justify-between items-center p-2 rounded bg-muted/30">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-muted rounded"></div>
-                        <div>
-                          <p className="font-medium">Batch Upload #{1000 + i}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {new Date(Date.now() - i * 86400000).toLocaleDateString()}
-                          </p>
-                        </div>
-                      </div>
-                      <div>
-                        <Badge>{10 + i * 5} faces</Badge>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </CardContent>
-      </Card>
-      
-      <Card>
-        <CardHeader>
-          <CardTitle>Model Performance</CardTitle>
-          <CardDescription>Recognition accuracy and speed metrics</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="h-60 flex items-center justify-center">
-            <div className="text-center space-y-2">
-              <BarChart className="h-10 w-10 mx-auto text-muted-foreground" />
-              <p className="text-muted-foreground">Performance metrics visualization will appear here</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
 function ReportsPanel() {
   return (
     <div className="space-y-6">
@@ -469,15 +376,7 @@ function SystemSettings() {
                 <div className="grid grid-cols-1 gap-4">
                   <div className="space-y-2">
                     <label className="text-sm font-medium">System Name</label>
-                    <Input defaultValue="Vision Sentinel System" />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Default Recognition Threshold</label>
-                    <Input defaultValue="0.85" />
-                    <p className="text-xs text-muted-foreground">
-                      Minimum confidence score required for positive identification (0-1)
-                    </p>
+                    <Input defaultValue="EyeSpy Surveillance System" />
                   </div>
                   
                   <div className="flex justify-end">
@@ -515,7 +414,7 @@ function SystemSettings() {
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Two-Factor Authentication</label>
                     <div className="flex items-center space-x-2">
-                      <input type="checkbox" id="tfa" className="accent-sentinel-accent h-4 w-4" />
+                      <input type="checkbox" id="tfa" className="accent-primary h-4 w-4" />
                       <label htmlFor="tfa" className="text-sm">Require 2FA for admin access</label>
                     </div>
                   </div>
@@ -554,7 +453,7 @@ function SystemSettings() {
                     <div className="space-y-2">
                       {["Restricted Person Detection", "Unknown Person Detection", "System Errors"].map((category, i) => (
                         <div key={i} className="flex items-center space-x-2">
-                          <input type="checkbox" id={`cat-${i}`} className="accent-sentinel-accent h-4 w-4" defaultChecked />
+                          <input type="checkbox" id={`cat-${i}`} className="accent-primary h-4 w-4" defaultChecked />
                           <label htmlFor={`cat-${i}`} className="text-sm">{category}</label>
                         </div>
                       ))}

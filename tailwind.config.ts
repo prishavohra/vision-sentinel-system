@@ -66,7 +66,7 @@ export default {
 				// EyeSpy custom colors
 				eyespy: {
 					DEFAULT: '#F59E0B', // orange from logo
-					dark: '#000000',    // black
+					dark: '#2a2a2a',    // dark gray instead of black
 					light: '#FEF3C7',   // light amber
 					accent: '#F59E0B',  // orange accent
 					alert: '#EF4444',   // red for alerts
