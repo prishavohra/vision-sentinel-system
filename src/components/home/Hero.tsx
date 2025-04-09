@@ -7,8 +7,8 @@ export default function Hero() {
     <div className="relative overflow-hidden">
       {/* Video Background with overlay */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gray-900/80 z-10"></div>
-        <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-950"></div>
+        <div className="absolute inset-0 bg-black/80 z-10"></div>
+        <div className="w-full h-full bg-gradient-to-br from-black to-gray-900"></div>
         
         {/* Animated scanning effect */}
         <div className="scanning-effect animate-scanning"></div>
@@ -19,7 +19,7 @@ export default function Hero() {
       
       <div className="container relative z-10 pt-20 pb-16 md:pt-32 md:pb-24">
         <div className="max-w-3xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 bg-gray-800/50 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
+          <div className="inline-flex items-center gap-2 bg-black/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
             <span className="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
             <span className="text-sm font-medium text-white">Criminal Recognition Active</span>
           </div>
@@ -45,15 +45,15 @@ export default function Hero() {
       {/* Feature highlight boxes */}
       <div className="container relative z-10 mb-20">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-gray-800/40 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
+          <div className="bg-black/40 backdrop-blur-sm border border-gray-800 rounded-lg p-6">
             <h3 className="text-xl font-semibold mb-2 text-white">Criminal Recognition</h3>
             <p className="text-white/70">Identify wanted criminals across multiple camera feeds with high accuracy.</p>
           </div>
-          <div className="bg-gray-800/40 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
+          <div className="bg-black/40 backdrop-blur-sm border border-gray-800 rounded-lg p-6">
             <h3 className="text-xl font-semibold mb-2 text-white">Instant Alerts</h3>
             <p className="text-white/70">Immediate notifications when persons of interest are detected in surveillance zones.</p>
           </div>
-          <div className="bg-gray-800/40 backdrop-blur-sm border border-gray-700 rounded-lg p-6">
+          <div className="bg-black/40 backdrop-blur-sm border border-gray-800 rounded-lg p-6">
             <h3 className="text-xl font-semibold mb-2 text-white">Movement Tracking</h3>
             <p className="text-white/70">Visualize paths and monitor movement patterns of identified individuals.</p>
           </div>

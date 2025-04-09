@@ -65,7 +65,7 @@ export default function Home() {
               description: "Role-based system access with multiple authentication layers." 
             },
           ].map((feature, i) => (
-            <Card key={i} className="grid-card bg-gray-800/20 border-gray-700">
+            <Card key={i} className="grid-card bg-black/20 border-gray-800">
               <CardHeader>
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                   <feature.icon className="h-6 w-6 text-primary" />
@@ -77,9 +77,9 @@ export default function Home() {
           ))}
         </div>
         
-        <div className="rounded-xl overflow-hidden border border-gray-700">
+        <div className="rounded-xl overflow-hidden border border-gray-800">
           <div className="grid grid-cols-1 lg:grid-cols-5">
-            <div className="col-span-2 bg-gray-800 p-8 flex flex-col justify-center">
+            <div className="col-span-2 bg-black p-8 flex flex-col justify-center">
               <h2 className="text-2xl font-bold mb-4">Law Enforcement Security</h2>
               <p className="mb-6">
                 EyeSpy is built with law enforcement security standards in mind, ensuring your data remains protected while providing powerful surveillance capabilities.
@@ -99,7 +99,7 @@ export default function Home() {
               </div>
             </div>
             <div className="col-span-3 p-4 bg-gray-900">
-              <div className="h-full bg-gray-800/80 rounded-lg overflow-hidden">
+              <div className="h-full bg-black/80 rounded-lg overflow-hidden">
                 <div className="w-full h-full flex items-center justify-center p-6">
                   <img 
                     src="/lovable-uploads/4384c84a-0f35-40f2-a88b-603e677867c6.png" 
