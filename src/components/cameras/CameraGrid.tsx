@@ -1,14 +1,14 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Camera, Video, VideoOff } from "lucide-react";
+import { Video, VideoOff, AlertTriangle } from "lucide-react";
 
 type Person = {
   id: string;
   name: string;
   confidence: number;
   timestamp: string;
+  status: "wanted" | "suspect" | "missing";
   boundingBox: {
     x: number;
     y: number;
@@ -25,12 +25,12 @@ type CameraFeed = {
   detectedPersons: Person[];
 };
 
-// Mock data for camera feeds
+// Mock data for camera feeds - exactly 3 cameras
 const mockCameraFeeds: CameraFeed[] = [
   {
     id: "cam-001",
     name: "Main Entrance",
-    location: "Building A",
+    location: "North Wing",
     status: "online",
     detectedPersons: [
       {
@@ -38,21 +38,15 @@ const mockCameraFeeds: CameraFeed[] = [
         name: "John Doe",
         confidence: 0.94,
         timestamp: new Date().toISOString(),
+        status: "wanted",
         boundingBox: { x: 120, y: 80, width: 100, height: 120 }
       }
     ]
   },
   {
     id: "cam-002",
-    name: "Lobby",
-    location: "Building A",
-    status: "online",
-    detectedPersons: []
-  },
-  {
-    id: "cam-003",
     name: "Parking Lot",
-    location: "Exterior",
+    location: "South Wing",
     status: "online",
     detectedPersons: [
       {
@@ -60,38 +54,17 @@ const mockCameraFeeds: CameraFeed[] = [
         name: "Jane Smith",
         confidence: 0.88,
         timestamp: new Date().toISOString(),
+        status: "suspect",
         boundingBox: { x: 200, y: 120, width: 90, height: 110 }
       }
     ]
   },
   {
-    id: "cam-004",
-    name: "Side Entrance",
-    location: "Building B",
-    status: "offline",
-    detectedPersons: []
-  },
-  {
-    id: "cam-005",
-    name: "Corridor",
-    location: "Building A",
+    id: "cam-003",
+    name: "Security Gate",
+    location: "East Wing",
     status: "online",
     detectedPersons: []
-  },
-  {
-    id: "cam-006",
-    name: "Server Room",
-    location: "Building B",
-    status: "online",
-    detectedPersons: [
-      {
-        id: "p-9012",
-        name: "Alex Johnson",
-        confidence: 0.92,
-        timestamp: new Date().toISOString(),
-        boundingBox: { x: 150, y: 100, width: 95, height: 115 }
-      }
-    ]
   }
 ];
 
@@ -106,6 +79,19 @@ export default function CameraGrid() {
 }
 
 function CameraCard({ camera }: { camera: CameraFeed }) {
+  const getStatusBadge = (status: "wanted" | "suspect" | "missing") => {
+    switch(status) {
+      case "wanted":
+        return <Badge className="bg-red-600">WANTED</Badge>;
+      case "suspect":
+        return <Badge className="bg-amber-500">SUSPECT</Badge>;
+      case "missing":
+        return <Badge className="bg-blue-500">MISSING</Badge>;
+      default:
+        return null;
+    }
+  };
+  
   return (
     <Card className="grid-card overflow-hidden">
       <CardHeader className="pb-2">
@@ -115,8 +101,8 @@ function CameraCard({ camera }: { camera: CameraFeed }) {
             {camera.status}
           </Badge>
         </div>
-        <p className="text-sm text-muted-foreground flex items-center">
-          <Camera className="h-3 w-3 mr-1" /> {camera.location} • ID: {camera.id}
+        <p className="text-sm text-muted-foreground">
+          {camera.location} • ID: {camera.id}
         </p>
       </CardHeader>
       <CardContent className="p-0">
@@ -153,12 +139,18 @@ function CameraCard({ camera }: { camera: CameraFeed }) {
               {camera.detectedPersons.map((person) => (
                 <div 
                   key={person.id}
-                  className="absolute left-2 bottom-2 z-10 bg-sentinel-dark/80 text-white text-xs p-1 rounded"
+                  className="absolute left-2 bottom-2 z-10 bg-black/80 border border-primary/30 text-white text-xs p-2 rounded flex flex-col gap-1"
                 >
-                  <div className="font-semibold">{person.name}</div>
-                  <div className="text-xs opacity-75">ID: {person.id}</div>
+                  <div className="flex items-center gap-1">
+                    <AlertTriangle className="h-3 w-3 text-red-500" />
+                    <div className="font-semibold">{person.name}</div>
+                  </div>
+                  <div className="flex items-center justify-between gap-2">
+                    <div>{getStatusBadge(person.status)}</div>
+                    <div className="text-xs opacity-75">ID: {person.id}</div>
+                  </div>
                   <div className="text-xs">
-                    Confidence: {(person.confidence * 100).toFixed(0)}%
+                    Match confidence: {(person.confidence * 100).toFixed(0)}%
                   </div>
                 </div>
               ))}

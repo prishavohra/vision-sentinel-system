@@ -10,22 +10,24 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
+  AlertTriangle,
   BellRing, 
   ChevronDown, 
   ChevronUp,
-  Filter, 
   Search,
   User
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-type AlertLevel = "info" | "warning" | "critical";
+type AlertLevel = "low" | "medium" | "high";
+type CriminalStatus = "wanted" | "suspect" | "missing";
 
 type Alert = {
   id: string;
   personId: string;
   personName: string;
+  status: CriminalStatus;
   cameraId: string;
   cameraName: string;
   timestamp: string;
@@ -41,10 +43,11 @@ const mockAlerts: Alert[] = [
     id: "alert-001",
     personId: "p-1234",
     personName: "John Doe",
+    status: "wanted",
     cameraId: "cam-001",
     cameraName: "Main Entrance",
     timestamp: new Date(Date.now() - 120000).toISOString(),
-    level: "info",
+    level: "high",
     image: "placeholder.svg",
     matched: "placeholder.svg",
     acknowledged: false
@@ -53,22 +56,24 @@ const mockAlerts: Alert[] = [
     id: "alert-002",
     personId: "p-5678",
     personName: "Jane Smith",
+    status: "suspect",
     cameraId: "cam-003",
     cameraName: "Parking Lot",
     timestamp: new Date(Date.now() - 300000).toISOString(),
-    level: "warning",
+    level: "medium",
     image: "placeholder.svg",
     matched: "placeholder.svg",
     acknowledged: false
   },
   {
     id: "alert-003",
-    personId: "p-unknown",
-    personName: "Unknown Person",
+    personId: "p-8765",
+    personName: "Robert Johnson",
+    status: "wanted",
     cameraId: "cam-002",
     cameraName: "Lobby",
     timestamp: new Date(Date.now() - 450000).toISOString(),
-    level: "critical",
+    level: "high",
     image: "placeholder.svg",
     matched: "placeholder.svg",
     acknowledged: false
@@ -76,11 +81,12 @@ const mockAlerts: Alert[] = [
   {
     id: "alert-004",
     personId: "p-9012",
-    personName: "Alex Johnson",
-    cameraId: "cam-006",
-    cameraName: "Server Room",
+    personName: "Alex Thompson",
+    status: "missing",
+    cameraId: "cam-003",
+    cameraName: "Security Gate",
     timestamp: new Date(Date.now() - 600000).toISOString(),
-    level: "warning",
+    level: "medium",
     image: "placeholder.svg",
     matched: "placeholder.svg",
     acknowledged: true
@@ -89,10 +95,11 @@ const mockAlerts: Alert[] = [
     id: "alert-005",
     personId: "p-3456",
     personName: "Emily Davis",
+    status: "suspect",
     cameraId: "cam-001",
     cameraName: "Main Entrance",
     timestamp: new Date(Date.now() - 720000).toISOString(),
-    level: "info",
+    level: "low",
     image: "placeholder.svg",
     matched: "placeholder.svg",
     acknowledged: true
@@ -121,11 +128,11 @@ export default function AlertList() {
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-2">
-          <div className="bg-sentinel-alert/10 text-sentinel-alert p-2 rounded-md">
-            <BellRing className="h-5 w-5" />
+          <div className="bg-primary/10 text-primary p-2 rounded-md">
+            <AlertTriangle className="h-5 w-5" />
           </div>
           <div>
-            <h2 className="text-xl font-semibold">System Alerts</h2>
+            <h2 className="text-xl font-semibold">Criminal Detection Alerts</h2>
             <p className="text-sm text-muted-foreground">
               {filteredAlerts.length} alerts • {filteredAlerts.filter(a => !a.acknowledged).length} unacknowledged
             </p>
@@ -183,21 +190,32 @@ function AlertCard({
   
   const getAlertBadgeStyles = (level: AlertLevel) => {
     switch (level) {
-      case "critical":
-        return "bg-sentinel-danger/10 text-sentinel-danger";
-      case "warning":
-        return "bg-sentinel-alert/10 text-sentinel-alert";
+      case "high":
+        return "bg-red-600/10 text-red-600";
+      case "medium":
+        return "bg-amber-500/10 text-amber-500";
       default:
-        return "bg-sentinel-accent/10 text-sentinel-accent";
+        return "bg-blue-500/10 text-blue-500";
+    }
+  };
+
+  const getStatusBadge = (status: CriminalStatus) => {
+    switch(status) {
+      case "wanted":
+        return <Badge className="bg-red-600">WANTED</Badge>;
+      case "suspect":
+        return <Badge className="bg-amber-500">SUSPECT</Badge>;
+      case "missing":
+        return <Badge className="bg-blue-500">MISSING</Badge>;
     }
   };
 
   return (
     <Card className={cn(
-      "border-l-4 transition-all", 
-      alert.level === "critical" ? "border-l-sentinel-danger" : 
-      alert.level === "warning" ? "border-l-sentinel-alert" : 
-      "border-l-sentinel-accent",
+      "border-l-4 transition-all bg-black/20", 
+      alert.level === "high" ? "border-l-red-600" : 
+      alert.level === "medium" ? "border-l-amber-500" : 
+      "border-l-blue-500",
       alert.acknowledged ? "opacity-70" : "opacity-100"
     )}>
       <CardHeader className="p-4 pb-0">
@@ -205,14 +223,16 @@ function AlertCard({
           <div className="flex items-center gap-2">
             <User className="h-5 w-5 text-muted-foreground" />
             <div>
-              <CardTitle className="text-base font-medium">{alert.personName}</CardTitle>
+              <CardTitle className="text-base font-medium flex items-center gap-2">
+                {alert.personName} {getStatusBadge(alert.status)}
+              </CardTitle>
               <CardDescription>ID: {alert.personId}</CardDescription>
             </div>
           </div>
           
           <div className="flex flex-col items-end">
             <Badge className={getAlertBadgeStyles(alert.level)}>
-              {alert.level.toUpperCase()}
+              {alert.level.toUpperCase()} PRIORITY
             </Badge>
             <span className="text-xs text-muted-foreground mt-1">
               {formatTime(alert.timestamp)}
@@ -256,7 +276,7 @@ function AlertCard({
             </div>
             
             <div className="space-y-2">
-              <p className="text-sm font-medium">Matched Record</p>
+              <p className="text-sm font-medium">Database Match</p>
               <div className="bg-muted rounded-md aspect-square flex items-center justify-center overflow-hidden">
                 <img 
                   src={alert.matched} 
@@ -268,7 +288,7 @@ function AlertCard({
             
             <div className="col-span-2 flex justify-end gap-2 mt-2">
               <Button variant="outline" size="sm">Dismiss</Button>
-              <Button size="sm">
+              <Button size="sm" className="bg-primary hover:bg-primary/90">
                 {alert.acknowledged ? "Mark as Unread" : "Acknowledge"}
               </Button>
             </div>

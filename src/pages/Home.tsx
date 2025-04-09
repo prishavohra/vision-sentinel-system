@@ -14,7 +14,8 @@ import {
   Eye, 
   Lock, 
   Map, 
-  ShieldCheck 
+  ShieldCheck,
+  AlertTriangle
 } from "lucide-react";
 
 export default function Home() {
@@ -24,10 +25,10 @@ export default function Home() {
       
       <div className="container py-16 space-y-12">
         <div className="text-center max-w-3xl mx-auto">
-          <h2 className="text-3xl font-bold mb-4">Advanced Facial Recognition</h2>
+          <h2 className="text-3xl font-bold mb-4">Advanced Criminal Recognition</h2>
           <p className="text-lg text-muted-foreground">
-            Vision Sentinel provides enterprise-grade security through real-time facial recognition,
-            movement tracking, and alert management.
+            EyeSpy provides enterprise-grade security through real-time facial recognition,
+            movement tracking, and alert management focused on identifying known criminals.
           </p>
         </div>
         
@@ -39,9 +40,14 @@ export default function Home() {
               description: "Monitor multiple camera feeds in real-time with AI-powered facial recognition." 
             },
             { 
+              icon: AlertTriangle, 
+              title: "Criminal Identification", 
+              description: "Instantly recognize individuals from your database of wanted persons." 
+            },
+            { 
               icon: Bell, 
               title: "Instant Alerts", 
-              description: "Receive immediate notifications when known or restricted individuals are detected." 
+              description: "Receive immediate notifications when known criminals are detected." 
             },
             { 
               icon: Map, 
@@ -50,24 +56,19 @@ export default function Home() {
             },
             { 
               icon: Database, 
-              title: "Face Database", 
-              description: "Maintain a secure database of known faces with custom classifications." 
+              title: "Criminal Database", 
+              description: "Maintain a secure database of wanted individuals with custom classifications." 
             },
             { 
               icon: ShieldCheck, 
               title: "Secure Access", 
               description: "Role-based system access with multiple authentication layers." 
             },
-            { 
-              icon: Eye, 
-              title: "Real-time Analytics", 
-              description: "Advanced metrics on detection accuracy and system performance." 
-            },
           ].map((feature, i) => (
-            <Card key={i} className="grid-card">
+            <Card key={i} className="grid-card bg-black/20 border-gray-800">
               <CardHeader>
-                <div className="w-12 h-12 rounded-full bg-sentinel-accent/10 flex items-center justify-center mb-4">
-                  <feature.icon className="h-6 w-6 text-sentinel-accent" />
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                  <feature.icon className="h-6 w-6 text-primary" />
                 </div>
                 <CardTitle>{feature.title}</CardTitle>
                 <CardDescription>{feature.description}</CardDescription>
@@ -76,12 +77,12 @@ export default function Home() {
           ))}
         </div>
         
-        <div className="rounded-xl overflow-hidden border">
+        <div className="rounded-xl overflow-hidden border border-gray-800">
           <div className="grid grid-cols-1 lg:grid-cols-5">
-            <div className="col-span-2 bg-sentinel-dark text-white p-8 flex flex-col justify-center">
-              <h2 className="text-2xl font-bold mb-4">Enterprise Security</h2>
+            <div className="col-span-2 bg-black p-8 flex flex-col justify-center">
+              <h2 className="text-2xl font-bold mb-4">Law Enforcement Security</h2>
               <p className="mb-6">
-                Vision Sentinel is built with enterprise security standards in mind, ensuring your data remains protected while providing powerful surveillance capabilities.
+                EyeSpy is built with law enforcement security standards in mind, ensuring your data remains protected while providing powerful surveillance capabilities.
               </p>
               <div className="space-y-4">
                 {[
@@ -91,19 +92,20 @@ export default function Home() {
                   "Regular security updates"
                 ].map((item, i) => (
                   <div key={i} className="flex items-center gap-2">
-                    <Lock className="h-4 w-4 text-sentinel-accent" />
+                    <Lock className="h-4 w-4 text-primary" />
                     <span>{item}</span>
                   </div>
                 ))}
               </div>
             </div>
-            <div className="col-span-3 p-4">
-              <div className="h-full bg-muted rounded-lg overflow-hidden">
-                <div className="bg-black/90 w-full h-full flex items-center justify-center">
-                  <div className="text-center text-white/60">
-                    <Camera className="h-16 w-16 mx-auto mb-4 text-white/40" />
-                    <p>System dashboard visualization</p>
-                  </div>
+            <div className="col-span-3 p-4 bg-gray-900">
+              <div className="h-full bg-black/80 rounded-lg overflow-hidden">
+                <div className="w-full h-full flex items-center justify-center p-6">
+                  <img 
+                    src="/lovable-uploads/4384c84a-0f35-40f2-a88b-603e677867c6.png" 
+                    alt="EyeSpy Logo" 
+                    className="h-32"
+                  />
                 </div>
               </div>
             </div>
@@ -112,7 +114,7 @@ export default function Home() {
         
         <div className="py-8 text-center">
           <p className="text-sm text-muted-foreground">
-            Vision Sentinel is compatible with most standard IP camera systems and can be integrated with existing security infrastructure.
+            EyeSpy is compatible with most standard IP camera systems and can be integrated with existing security infrastructure.
           </p>
         </div>
       </div>

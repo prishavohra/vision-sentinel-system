@@ -29,14 +29,12 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-background/95 backdrop-blur border-b">
+    <header className="sticky top-0 z-40 w-full bg-black/95 backdrop-blur border-b border-gray-800">
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
           <NavLink to="/" className="flex items-center gap-2 font-bold text-xl">
-            <div className="w-8 h-8 bg-sentinel-accent rounded-md flex items-center justify-center">
-              <Camera className="w-5 h-5 text-white" />
-            </div>
-            <span className="hidden sm:inline-block">Vision Sentinel</span>
+            <img src="/lovable-uploads/4384c84a-0f35-40f2-a88b-603e677867c6.png" alt="EyeSpy Logo" className="w-10 h-10" />
+            <span className="hidden sm:inline-block text-white">EyeSpy</span>
           </NavLink>
         </div>
         
@@ -47,7 +45,7 @@ export default function Navbar() {
               to={item.path}
               className={({ isActive }) => cn(
                 "nav-link",
-                isActive ? "nav-link-active" : "text-foreground/70 hover:text-foreground hover:bg-accent/10"
+                isActive ? "nav-link-active" : "text-gray-300 hover:text-white hover:bg-gray-800/50"
               )}
               end={item.path === '/'}
             >
@@ -60,14 +58,14 @@ export default function Navbar() {
         <Button 
           variant="ghost" 
           size="icon" 
-          className="md:hidden"
+          className="md:hidden text-white"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
           {isMenuOpen ? <X /> : <Menu />}
         </Button>
         
         {isMenuOpen && (
-          <div className="absolute top-16 left-0 w-full bg-background border-b md:hidden z-50 animate-fade-in">
+          <div className="absolute top-16 left-0 w-full bg-black border-b border-gray-800 md:hidden z-50 animate-fade-in">
             <div className="container py-4 flex flex-col space-y-1">
               {navItems.map((item) => (
                 <NavLink
@@ -75,7 +73,7 @@ export default function Navbar() {
                   to={item.path}
                   className={({ isActive }) => cn(
                     "nav-link py-3",
-                    isActive ? "nav-link-active" : "text-foreground/70 hover:text-foreground hover:bg-accent/10"
+                    isActive ? "nav-link-active" : "text-gray-300 hover:text-white hover:bg-gray-800/50"
                   )}
                   end={item.path === '/'}
                   onClick={() => setIsMenuOpen(false)}

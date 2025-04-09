@@ -1,14 +1,14 @@
 
 import { Button } from '@/components/ui/button';
-import { ArrowRight, ShieldCheck } from 'lucide-react';
+import { ArrowRight, ShieldCheck, AlertTriangle } from 'lucide-react';
 
 export default function Hero() {
   return (
     <div className="relative overflow-hidden">
       {/* Video Background with overlay */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-sentinel-dark/70 z-10"></div>
-        <div className="w-full h-full bg-gradient-to-br from-sentinel-dark to-sentinel-DEFAULT"></div>
+        <div className="absolute inset-0 bg-black/80 z-10"></div>
+        <div className="w-full h-full bg-gradient-to-br from-black to-gray-900"></div>
         
         {/* Animated scanning effect */}
         <div className="scanning-effect animate-scanning"></div>
@@ -20,24 +20,20 @@ export default function Hero() {
       <div className="container relative z-10 pt-20 pb-16 md:pt-32 md:pb-24">
         <div className="max-w-3xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-black/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
-            <span className="w-2 h-2 bg-sentinel-accent rounded-full animate-pulse"></span>
-            <span className="text-sm font-medium text-white">Facial Recognition Active</span>
+            <span className="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
+            <span className="text-sm font-medium text-white">Criminal Recognition Active</span>
           </div>
           
           <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white">
-            Vision Sentinel System
+            EyeSpy Surveillance System
           </h1>
           
           <p className="text-lg md:text-xl mb-8 text-white/80">
-            Advanced real-time facial recognition and monitoring system. 
-            Secure, accurate, and built for enterprise surveillance needs.
+            Advanced real-time criminal recognition and monitoring system. 
+            Secure, accurate, and designed to identify persons of interest from your database.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-sentinel-accent hover:bg-sentinel-accent/90">
-              Live Dashboard
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
             <Button size="lg" variant="outline" className="text-white border-white/20 bg-white/10 hover:bg-white/20">
               <ShieldCheck className="mr-2 h-4 w-4" />
               Security Features
@@ -49,17 +45,17 @@ export default function Hero() {
       {/* Feature highlight boxes */}
       <div className="container relative z-10 mb-20">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white/10 backdrop-blur-sm border border-white/10 rounded-lg p-6">
-            <h3 className="text-xl font-semibold mb-2 text-white">Real-time Recognition</h3>
-            <p className="text-white/70">Identify and track individuals across multiple camera feeds with millisecond response time.</p>
+          <div className="bg-black/40 backdrop-blur-sm border border-gray-800 rounded-lg p-6">
+            <h3 className="text-xl font-semibold mb-2 text-white">Criminal Recognition</h3>
+            <p className="text-white/70">Identify wanted criminals across multiple camera feeds with high accuracy.</p>
           </div>
-          <div className="bg-white/10 backdrop-blur-sm border border-white/10 rounded-lg p-6">
-            <h3 className="text-xl font-semibold mb-2 text-white">Advanced Alerts</h3>
-            <p className="text-white/70">Instant notifications when known or flagged individuals are detected in surveillance zones.</p>
+          <div className="bg-black/40 backdrop-blur-sm border border-gray-800 rounded-lg p-6">
+            <h3 className="text-xl font-semibold mb-2 text-white">Instant Alerts</h3>
+            <p className="text-white/70">Immediate notifications when persons of interest are detected in surveillance zones.</p>
           </div>
-          <div className="bg-white/10 backdrop-blur-sm border border-white/10 rounded-lg p-6">
+          <div className="bg-black/40 backdrop-blur-sm border border-gray-800 rounded-lg p-6">
             <h3 className="text-xl font-semibold mb-2 text-white">Movement Tracking</h3>
-            <p className="text-white/70">Visualize paths and monitor movement patterns across your entire security infrastructure.</p>
+            <p className="text-white/70">Visualize paths and monitor movement patterns of identified individuals.</p>
           </div>
         </div>
       </div>

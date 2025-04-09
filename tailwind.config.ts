@@ -63,14 +63,13 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Vision Sentinel custom colors
-				sentinel: {
-					DEFAULT: '#1E3A8A', // deep blue
-					dark: '#0F172A',    // darker blue
-					light: '#3B82F6',   // lighter blue
-					accent: '#10B981',  // teal accent
-					alert: '#F59E0B',   // amber for alerts
-					danger: '#EF4444',  // red for critical alerts
+				// EyeSpy custom colors
+				eyespy: {
+					DEFAULT: '#F59E0B', // orange from logo
+					dark: '#000000',    // black
+					light: '#FEF3C7',   // light amber
+					accent: '#F59E0B',  // orange accent
+					alert: '#EF4444',   // red for alerts
 				}
 			},
 			borderRadius: {
