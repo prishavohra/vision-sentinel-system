@@ -29,7 +29,7 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-black/95 backdrop-blur border-b border-gray-800">
+    <header className="sticky top-0 z-40 w-full bg-gray-800/95 backdrop-blur border-b border-gray-700">
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
           <NavLink to="/" className="flex items-center gap-2 font-bold text-xl">
@@ -45,7 +45,7 @@ export default function Navbar() {
               to={item.path}
               className={({ isActive }) => cn(
                 "nav-link",
-                isActive ? "nav-link-active" : "text-gray-300 hover:text-white hover:bg-gray-800/50"
+                isActive ? "nav-link-active" : "text-gray-300 hover:text-white hover:bg-gray-700/50"
               )}
               end={item.path === '/'}
             >
@@ -65,7 +65,7 @@ export default function Navbar() {
         </Button>
         
         {isMenuOpen && (
-          <div className="absolute top-16 left-0 w-full bg-black border-b border-gray-800 md:hidden z-50 animate-fade-in">
+          <div className="absolute top-16 left-0 w-full bg-gray-800 border-b border-gray-700 md:hidden z-50 animate-fade-in">
             <div className="container py-4 flex flex-col space-y-1">
               {navItems.map((item) => (
                 <NavLink
@@ -73,7 +73,7 @@ export default function Navbar() {
                   to={item.path}
                   className={({ isActive }) => cn(
                     "nav-link py-3",
-                    isActive ? "nav-link-active" : "text-gray-300 hover:text-white hover:bg-gray-800/50"
+                    isActive ? "nav-link-active" : "text-gray-300 hover:text-white hover:bg-gray-700/50"
                   )}
                   end={item.path === '/'}
                   onClick={() => setIsMenuOpen(false)}
