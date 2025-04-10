@@ -1,3 +1,4 @@
+
 import { Button } from '@/components/ui/button';
 import { ArrowRight, ShieldCheck, AlertTriangle } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -6,21 +7,21 @@ export default function Hero() {
   const [zoomLevel, setZoomLevel] = useState(1);
   const [panPosition, setPanPosition] = useState({ x: 0, y: 0 });
   
-  // Enhanced subtle camera movement effect
+  // Enhanced camera movement effect with better visibility
   useEffect(() => {
     const zoomInterval = setInterval(() => {
       setZoomLevel(prev => {
-        // Increased oscillation between 1 and 1.05
-        return prev >= 1.05 ? 1 : prev + 0.0005;
+        // Increased zoom range for better visibility
+        return prev >= 1.08 ? 1 : prev + 0.0008;
       });
     }, 50);
     
     const panInterval = setInterval(() => {
       setPanPosition(prev => {
-        // Slightly more noticeable panning effect
+        // Enhanced panning for better visibility
         return {
-          x: prev.x >= 0.8 ? 0 : prev.x + 0.01,
-          y: prev.y >= 0.5 ? 0 : prev.y + 0.008
+          x: prev.x >= 1.2 ? 0 : prev.x + 0.015,
+          y: prev.y >= 0.8 ? 0 : prev.y + 0.01
         };
       });
     }, 100);
@@ -33,22 +34,27 @@ export default function Hero() {
   
   return (
     <div className="relative overflow-hidden">
-      {/* Video Background with overlay */}
+      {/* Video Background with enhanced visibility */}
       <div className="absolute inset-0 z-0" style={{
         transform: `scale(${zoomLevel}) translate(${panPosition.x}%, ${panPosition.y}%)`,
-        transition: 'transform 0.5s ease-out' // Reduced transition time for more visible movement
+        transition: 'transform 0.5s ease-out' 
       }}>
-        <div className="absolute inset-0 bg-black/80 z-10"></div>
-        <div className="w-full h-full bg-gradient-to-br from-black to-gray-900"></div>
+        {/* Changed background to have a pattern that shows movement better */}
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-900 to-black z-10"></div>
         
-        {/* Animated scanning effect */}
-        <div className="scanning-effect animate-scanning"></div>
+        {/* Added subtle pattern that helps reveal movement */}
+        <div className="w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiMzMzMzMzMiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzR2MjZoMjRWMzRIMzZ6TTEwIDEwdjI2aDI2VjEwSDEweiIvPjwvZz48L2c+PC9zdmc+')]"></div>
         
-        {/* Grid pattern overlay */}
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiMyMDIwMjAiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djI2aDI0VjM0SDM2ek0xMCAxMHYyNmgyNlYxMEgxMHoiLz48L2c+PC9nPjwvc3ZnPg==')]"></div>
+        {/* More visible scanning effect */}
+        <div className="scanning-effect"></div>
         
-        {/* Added scanline effect */}
+        {/* Enhanced grid pattern overlay with higher opacity */}
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiMzMzMzMzMiIGZpbGwtb3BhY2l0eT0iMC4xNSI+PHBhdGggZD0iTTM2IDM0djI2aDI0VjM0SDM2ek0xMCAxMHYyNmgyNlYxMEgxMHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-80"></div>
+        
+        {/* Multiple scanlines for better visibility */}
         <div className="scanline"></div>
+        <div className="scanline" style={{ animationDelay: "2s" }}></div>
+        <div className="scanline" style={{ animationDelay: "4s" }}></div>
       </div>
       
       <div className="container relative z-10 pt-20 pb-16 md:pt-32 md:pb-24">

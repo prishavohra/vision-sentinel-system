@@ -89,6 +89,7 @@
   
   .scanning-effect {
     @apply absolute inset-0 bg-gradient-to-b from-transparent to-primary/20 opacity-50 pointer-events-none;
+    animation: pulse 4s ease-in-out infinite;
   }
   
   .face-highlight {
@@ -106,16 +107,21 @@
   animation: blink 2s infinite;
 }
 
+@keyframes pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.8; }
+}
+
 @keyframes scanline {
   0% { 
     transform: translateY(-100%);
     opacity: 0; 
   }
   10% { 
-    opacity: 0.4; 
+    opacity: 0.6; 
   }
   80% { 
-    opacity: 0.4; 
+    opacity: 0.6; 
   }
   100% { 
     transform: translateY(100%);
@@ -128,9 +134,9 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 3px;
-  background: rgba(255, 255, 255, 0.2);
-  opacity: 0.5;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  opacity: 0.7;
   z-index: 20;
-  animation: scanline 6s linear infinite;
+  animation: scanline 4s linear infinite;
 }
