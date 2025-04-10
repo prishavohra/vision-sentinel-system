@@ -41,6 +41,7 @@ import {
   Mail
 } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { toast } from "@/components/ui/use-toast";
 
 export default function AdminPanel() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -220,6 +221,25 @@ function AdminDashboard() {
 
 function UserManagement() {
   const [showAddUser, setShowAddUser] = useState(false);
+  const [users, setUsers] = useState([
+    { name: "Admin User", email: "admin@example.com", role: "Administrator", status: "Active", lastLogin: new Date(Date.now() - 0 * 86400000).toLocaleDateString() },
+    { name: "Security Staff", email: "security@example.com", role: "Operator", status: "Active", lastLogin: new Date(Date.now() - 1 * 86400000).toLocaleDateString() },
+    { name: "Front Desk", email: "frontdesk@example.com", role: "Viewer", status: "Active", lastLogin: new Date(Date.now() - 2 * 86400000).toLocaleDateString() },
+    { name: "Backup User", email: "backup@example.com", role: "Administrator", status: "Inactive", lastLogin: "Never" },
+  ]);
+  
+  const handleAddUser = (userData: any) => {
+    const newUser = {
+      ...userData,
+      lastLogin: "Never"
+    };
+    setUsers([...users, newUser]);
+    setShowAddUser(false);
+    toast({
+      title: "User created",
+      description: `${userData.name} has been added successfully.`,
+    });
+  };
   
   return (
     <Card>
@@ -247,12 +267,7 @@ function UserManagement() {
           
           <Separator />
           
-          {[
-            { name: "Admin User", email: "admin@example.com", role: "Administrator", status: "Active" },
-            { name: "Security Staff", email: "security@example.com", role: "Operator", status: "Active" },
-            { name: "Front Desk", email: "frontdesk@example.com", role: "Viewer", status: "Active" },
-            { name: "Backup User", email: "backup@example.com", role: "Administrator", status: "Inactive" },
-          ].map((user, i) => (
+          {users.map((user, i) => (
             <div key={i} className="grid grid-cols-6 p-4 hover:bg-muted/30 transition-colors">
               <div className="col-span-2">
                 <div className="font-medium">{user.name}</div>
@@ -268,7 +283,7 @@ function UserManagement() {
                 {user.status}
               </div>
               <div className="self-center text-sm text-muted-foreground">
-                {i === 3 ? "Never" : new Date(Date.now() - i * 86400000).toLocaleDateString()}
+                {user.lastLogin}
               </div>
               <div className="self-center text-right">
                 <Button variant="ghost" size="icon">
@@ -276,19 +291,19 @@ function UserManagement() {
                 </Button>
               </div>
               
-              {i < 3 && <Separator />}
+              {i < users.length - 1 && <Separator />}
             </div>
           ))}
         </div>
       </CardContent>
       
       {/* Add User Dialog */}
-      <AddUserDialog open={showAddUser} onClose={() => setShowAddUser(false)} />
+      <AddUserDialog open={showAddUser} onClose={() => setShowAddUser(false)} onAdd={handleAddUser} />
     </Card>
   );
 }
 
-function AddUserDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
+function AddUserDialog({ open, onClose, onAdd }: { open: boolean; onClose: () => void; onAdd: (userData: any) => void }) {
   const form = useForm({
     defaultValues: {
       name: "",
@@ -297,6 +312,11 @@ function AddUserDialog({ open, onClose }: { open: boolean; onClose: () => void }
       status: "",
     }
   });
+  
+  const handleSubmit = (data: any) => {
+    onAdd(data);
+    form.reset();
+  };
   
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -309,7 +329,7 @@ function AddUserDialog({ open, onClose }: { open: boolean; onClose: () => void }
         </DialogHeader>
         
         <Form {...form}>
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={form.handleSubmit(handleSubmit)}>
             <FormField
               control={form.control}
               name="name"
@@ -382,13 +402,13 @@ function AddUserDialog({ open, onClose }: { open: boolean; onClose: () => void }
                 )}
               />
             </div>
+            
+            <DialogFooter>
+              <Button variant="outline" type="button" onClick={onClose}>Cancel</Button>
+              <Button type="submit">Create User</Button>
+            </DialogFooter>
           </form>
         </Form>
-        
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
-          <Button>Create User</Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
