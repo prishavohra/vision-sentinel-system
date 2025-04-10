@@ -77,7 +77,8 @@ export default function Home() {
           ))}
         </div>
         
-        <div className="rounded-xl overflow-hidden border border-gray-800">
+        {/* Added id to the security section for scroll targeting */}
+        <div id="security-section" className="rounded-xl overflow-hidden border border-gray-800">
           <div className="grid grid-cols-1 lg:grid-cols-5">
             <div className="col-span-2 bg-black p-8 flex flex-col justify-center">
               <h2 className="text-2xl font-bold mb-4">Law Enforcement Security</h2>

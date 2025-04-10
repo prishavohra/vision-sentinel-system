@@ -32,6 +32,14 @@ export default function Hero() {
     };
   }, []);
   
+  // Function to scroll to security section
+  const scrollToSecuritySection = () => {
+    const securitySection = document.getElementById('security-section');
+    if (securitySection) {
+      securitySection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+  
   return (
     <div className="relative overflow-hidden">
       {/* Video Background with enhanced visibility */}
@@ -85,7 +93,12 @@ export default function Hero() {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" variant="outline" className="text-white border-white/20 bg-white/10 hover:bg-white/20">
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="text-white border-white/20 bg-white/10 hover:bg-white/20"
+              onClick={scrollToSecuritySection}
+            >
               <ShieldCheck className="mr-2 h-4 w-4" />
               Security Features
             </Button>
