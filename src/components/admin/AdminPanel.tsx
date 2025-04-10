@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -5,6 +6,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { 
   BarChart, 
   ChevronDown, 
@@ -18,8 +35,12 @@ import {
   Shield, 
   Upload, 
   UserPlus, 
-  Users 
+  Users,
+  Calendar,
+  Clock,
+  Mail
 } from "lucide-react";
+import { useForm } from "react-hook-form";
 
 export default function AdminPanel() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -175,10 +196,9 @@ function AdminDashboard() {
       
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-medium">Quick Actions</h3>
-        <Button variant="link" className="text-sentinel-accent">View All</Button>
       </div>
       
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <Button variant="outline" className="h-auto py-4 flex flex-col items-center justify-center gap-2">
           <FileText className="h-5 w-5" />
           <span>Generate Report</span>
@@ -193,17 +213,14 @@ function AdminDashboard() {
           <Upload className="h-5 w-5" />
           <span>Update Database</span>
         </Button>
-        
-        <Button variant="outline" className="h-auto py-4 flex flex-col items-center justify-center gap-2">
-          <Settings className="h-5 w-5" />
-          <span>System Config</span>
-        </Button>
       </div>
     </div>
   );
 }
 
 function UserManagement() {
+  const [showAddUser, setShowAddUser] = useState(false);
+  
   return (
     <Card>
       <CardHeader>
@@ -212,7 +229,7 @@ function UserManagement() {
             <CardTitle>User Management</CardTitle>
             <CardDescription>Manage system access and permissions</CardDescription>
           </div>
-          <Button>
+          <Button onClick={() => setShowAddUser(true)}>
             <UserPlus className="h-4 w-4 mr-2" />
             Add User
           </Button>
@@ -264,11 +281,122 @@ function UserManagement() {
           ))}
         </div>
       </CardContent>
+      
+      {/* Add User Dialog */}
+      <AddUserDialog open={showAddUser} onClose={() => setShowAddUser(false)} />
     </Card>
   );
 }
 
+function AddUserDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const form = useForm({
+    defaultValues: {
+      name: "",
+      email: "",
+      role: "",
+      status: "",
+    }
+  });
+  
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Add New User</DialogTitle>
+          <DialogDescription>
+            Create a new user account with system access
+          </DialogDescription>
+        </DialogHeader>
+        
+        <Form {...form}>
+          <form className="space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>User Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter user name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input type="email" placeholder="Enter email address" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Role</FormLabel>
+                    <FormControl>
+                      <select 
+                        className="w-full flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                        {...field}
+                      >
+                        <option value="">Select role</option>
+                        <option value="Administrator">Administrator</option>
+                        <option value="Operator">Operator</option>
+                        <option value="Viewer">Viewer</option>
+                      </select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Status</FormLabel>
+                    <FormControl>
+                      <select 
+                        className="w-full flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                        {...field}
+                      >
+                        <option value="">Select status</option>
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                      </select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </form>
+        </Form>
+        
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button>Create User</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function ReportsPanel() {
+  const [configureReport, setConfigureReport] = useState<string | null>(null);
+  
   return (
     <div className="space-y-6">
       <Card>
@@ -317,9 +445,9 @@ function ReportsPanel() {
         <CardContent>
           <div className="space-y-4">
             {[
-              { title: "Daily Summary", frequency: "Daily at 00:00", status: "Active" },
-              { title: "Weekly Activity", frequency: "Every Monday at 08:00", status: "Active" },
-              { title: "Monthly Analytics", frequency: "First day of month", status: "Inactive" },
+              { id: "daily", title: "Daily Summary", frequency: "Daily at 00:00", status: "Active" },
+              { id: "weekly", title: "Weekly Activity", frequency: "Every Monday at 08:00", status: "Active" },
+              { id: "monthly", title: "Monthly Analytics", frequency: "First day of month", status: "Inactive" },
             ].map((scheduled, i) => (
               <div key={i} className="flex justify-between items-center p-4 rounded border hover:bg-muted/30 transition-colors">
                 <div>
@@ -335,14 +463,154 @@ function ReportsPanel() {
                   </div>
                 </div>
                 <div>
-                  <Button variant="outline" size="sm">Configure</Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setConfigureReport(scheduled.id)}
+                  >
+                    Configure
+                  </Button>
                 </div>
               </div>
             ))}
           </div>
         </CardContent>
       </Card>
+      
+      {/* Configure Report Dialog */}
+      <ConfigureReportDialog 
+        open={!!configureReport} 
+        reportId={configureReport || ""} 
+        onClose={() => setConfigureReport(null)} 
+      />
     </div>
+  );
+}
+
+function ConfigureReportDialog({ open, reportId, onClose }: { open: boolean; reportId: string; onClose: () => void }) {
+  // Get report details based on ID
+  const reportDetails = {
+    daily: {
+      title: "Daily Summary",
+      frequency: "Daily",
+      time: "00:00",
+      recipients: "security@example.com",
+      format: "PDF",
+      active: true
+    },
+    weekly: {
+      title: "Weekly Activity",
+      frequency: "Weekly",
+      day: "Monday",
+      time: "08:00",
+      recipients: "management@example.com, security@example.com",
+      format: "Excel",
+      active: true
+    },
+    monthly: {
+      title: "Monthly Analytics",
+      frequency: "Monthly",
+      day: "1",
+      time: "00:00",
+      recipients: "executive@example.com",
+      format: "PDF",
+      active: false
+    }
+  }[reportId] || { title: "", frequency: "", time: "", recipients: "", format: "", active: false };
+  
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Configure {reportDetails.title}</DialogTitle>
+          <DialogDescription>
+            Adjust the settings for this scheduled report
+          </DialogDescription>
+        </DialogHeader>
+        
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Frequency</label>
+              <select className="w-full flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background" defaultValue={reportDetails.frequency}>
+                <option>Daily</option>
+                <option>Weekly</option>
+                <option>Monthly</option>
+              </select>
+            </div>
+            
+            {reportDetails.frequency === "Weekly" && (
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Day</label>
+                <select className="w-full flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background" defaultValue={reportDetails.day}>
+                  <option>Monday</option>
+                  <option>Tuesday</option>
+                  <option>Wednesday</option>
+                  <option>Thursday</option>
+                  <option>Friday</option>
+                  <option>Saturday</option>
+                  <option>Sunday</option>
+                </select>
+              </div>
+            )}
+            
+            {reportDetails.frequency === "Monthly" && (
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Day of Month</label>
+                <select className="w-full flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background" defaultValue={reportDetails.day}>
+                  {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
+                    <option key={day} value={day}>{day}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+            
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Time</label>
+              <Input type="time" defaultValue={reportDetails.time} />
+            </div>
+            
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Format</label>
+              <select className="w-full flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background" defaultValue={reportDetails.format}>
+                <option>PDF</option>
+                <option>Excel</option>
+                <option>CSV</option>
+              </select>
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Recipients (comma separated)</label>
+            <Input defaultValue={reportDetails.recipients} />
+          </div>
+          
+          <div className="flex items-center space-x-2 mt-4">
+            <input 
+              type="checkbox" 
+              id="active" 
+              defaultChecked={reportDetails.active} 
+              className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+            />
+            <label htmlFor="active" className="text-sm">Active</label>
+          </div>
+          
+          <div className="bg-muted/30 p-3 rounded-md flex items-center gap-3 text-sm text-muted-foreground">
+            <div className="bg-primary/10 p-2 rounded-full">
+              <Calendar className="h-4 w-4 text-primary" />
+            </div>
+            <div>
+              Next scheduled run: {reportDetails.active ? "Tomorrow at 00:00" : "Not scheduled"}
+            </div>
+          </div>
+        </div>
+        
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button>Save Configuration</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 

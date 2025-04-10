@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { 
   Card, 
   CardContent, 
@@ -11,6 +10,22 @@ import {
   CardHeader, 
   CardTitle 
 } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,15 +37,17 @@ import {
 import { 
   Database, 
   Download, 
-  Filter, 
   MoreVertical, 
   Plus, 
   Search, 
   Trash, 
   Upload, 
   User, 
-  UserPlus 
+  UserPlus,
+  File,
+  Camera
 } from "lucide-react";
+import { useForm } from "react-hook-form";
 
 type FaceRecord = {
   id: string;
@@ -95,20 +112,13 @@ const mockFaces: FaceRecord[] = [
 
 export default function FaceDatabase() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [showAddFace, setShowAddFace] = useState(false);
+  const [selectedFace, setSelectedFace] = useState<FaceRecord | null>(null);
   
-  // Filter faces based on search term and category
+  // Filter faces based on search term
   const filteredFaces = mockFaces.filter(face => {
-    // Search filter
-    const matchesSearch = 
-      face.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    return face.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       face.id.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    // Category filter
-    const matchesCategory = 
-      !selectedCategory || face.category === selectedCategory;
-    
-    return matchesSearch && matchesCategory;
   });
   
   return (
@@ -121,7 +131,7 @@ export default function FaceDatabase() {
           <div>
             <h2 className="text-xl font-semibold">Known Faces Database</h2>
             <p className="text-sm text-muted-foreground">
-              {mockFaces.length} total records • {mockFaces.filter(f => f.category === "employee").length} employees
+              {mockFaces.length} total records
             </p>
           </div>
         </div>
@@ -138,35 +148,7 @@ export default function FaceDatabase() {
             />
           </div>
           
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="flex items-center gap-2">
-                <Filter className="h-4 w-4" />
-                <span>Filter</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Filter by Category</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => setSelectedCategory(null)}>
-                All Categories
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSelectedCategory("employee")}>
-                Employees
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSelectedCategory("visitor")}>
-                Visitors
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSelectedCategory("restricted")}>
-                Restricted
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSelectedCategory("unknown")}>
-                Unknown
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          
-          <Button className="flex items-center gap-2">
+          <Button className="flex items-center gap-2" onClick={() => setShowAddFace(true)}>
             <UserPlus className="h-4 w-4" />
             <span>Add New</span>
           </Button>
@@ -175,7 +157,11 @@ export default function FaceDatabase() {
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {filteredFaces.map((face) => (
-          <FaceCard key={face.id} face={face} />
+          <FaceCard 
+            key={face.id} 
+            face={face} 
+            onViewDetails={() => setSelectedFace(face)} 
+          />
         ))}
         
         {/* Add new face card */}
@@ -188,7 +174,7 @@ export default function FaceDatabase() {
             <p className="text-sm text-muted-foreground text-center mb-4">
               Upload a new face to the database
             </p>
-            <Button size="sm">
+            <Button size="sm" onClick={() => setShowAddFace(true)}>
               <Upload className="h-4 w-4 mr-2" />
               Upload
             </Button>
@@ -208,24 +194,82 @@ export default function FaceDatabase() {
           </div>
         )}
       </div>
+      
+      {/* Add Face Dialog */}
+      <AddFaceDialog open={showAddFace} onClose={() => setShowAddFace(false)} />
+      
+      {/* View Details Dialog */}
+      {selectedFace && (
+        <Dialog open={!!selectedFace} onOpenChange={() => setSelectedFace(null)}>
+          <DialogContent className="max-w-3xl">
+            <DialogHeader>
+              <DialogTitle>Face Record Details</DialogTitle>
+              <DialogDescription>
+                Complete information about this individual
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="flex flex-col items-center">
+                <div className="w-40 h-40 rounded-full bg-muted overflow-hidden mb-4">
+                  <img 
+                    src={selectedFace.thumbnail} 
+                    alt={selectedFace.name} 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <h3 className="text-xl font-semibold">{selectedFace.name}</h3>
+                <p className="text-muted-foreground">{selectedFace.id}</p>
+              </div>
+              
+              <div className="md:col-span-2 space-y-4">
+                <div className="grid grid-cols-2 gap-4 pb-4 border-b">
+                  <div>
+                    <h4 className="text-sm text-muted-foreground">Date Added</h4>
+                    <p>{selectedFace.dateAdded}</p>
+                  </div>
+                  <div>
+                    <h4 className="text-sm text-muted-foreground">Last Seen</h4>
+                    <p>{selectedFace.lastSeen ? new Date(selectedFace.lastSeen).toLocaleString() : "Never"}</p>
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <h4 className="font-medium">Recent Activity</h4>
+                  <div className="space-y-2">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="flex justify-between text-sm p-2 rounded bg-muted/30">
+                        <span>Detected at {i === 1 ? "Main Entrance" : i === 2 ? "Parking Lot" : "Security Gate"}</span>
+                        <span className="text-muted-foreground">{new Date(Date.now() - i * 3600000).toLocaleTimeString()}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <h4 className="font-medium">Notes</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Subject has been identified multiple times at the north entrance during non-business hours.
+                    Heightened monitoring recommended.
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <DialogFooter>
+              <Button variant="outline">
+                <Download className="mr-2 h-4 w-4" />
+                Export Report
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
 
-function FaceCard({ face }: { face: FaceRecord }) {
-  const getCategoryBadge = (category: string) => {
-    switch (category) {
-      case "employee":
-        return <Badge className="bg-sentinel-accent">Employee</Badge>;
-      case "visitor":
-        return <Badge variant="outline">Visitor</Badge>;
-      case "restricted":
-        return <Badge variant="destructive">Restricted</Badge>;
-      default:
-        return <Badge variant="secondary">Unknown</Badge>;
-    }
-  };
-  
+function FaceCard({ face, onViewDetails }: { face: FaceRecord; onViewDetails: () => void }) {
   const formatDate = (isoString: string | null) => {
     if (!isoString) return "Never";
     
@@ -248,7 +292,7 @@ function FaceCard({ face }: { face: FaceRecord }) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>View Details</DropdownMenuItem>
+              <DropdownMenuItem onClick={onViewDetails}>View Details</DropdownMenuItem>
               <DropdownMenuItem>Edit Record</DropdownMenuItem>
               <DropdownMenuItem>Update Image</DropdownMenuItem>
               <DropdownMenuSeparator />
@@ -271,7 +315,6 @@ function FaceCard({ face }: { face: FaceRecord }) {
           <div>
             <CardTitle className="text-base font-medium">{face.name}</CardTitle>
             <CardDescription>{face.id}</CardDescription>
-            <div className="mt-1">{getCategoryBadge(face.category)}</div>
           </div>
         </div>
       </CardHeader>
@@ -290,7 +333,7 @@ function FaceCard({ face }: { face: FaceRecord }) {
       </CardContent>
       
       <CardFooter className="p-4 pt-0 flex justify-between">
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" onClick={onViewDetails}>
           View Details
         </Button>
         <Button variant="outline" size="icon" className="h-8 w-8">
@@ -298,5 +341,87 @@ function FaceCard({ face }: { face: FaceRecord }) {
         </Button>
       </CardFooter>
     </Card>
+  );
+}
+
+function AddFaceDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const form = useForm({
+    defaultValues: {
+      name: "",
+      id: "",
+    }
+  });
+  
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Add New Face</DialogTitle>
+          <DialogDescription>
+            Fill out the information below to add a new face to the database
+          </DialogDescription>
+        </DialogHeader>
+        
+        <Form {...form}>
+          <form className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Full Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter full name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>ID Number</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter ID number" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <h4 className="text-sm font-medium">Face Images</h4>
+              <p className="text-xs text-muted-foreground mb-2">
+                Upload 5 images from different angles for better recognition
+              </p>
+              
+              <div className="grid grid-cols-5 gap-2">
+                {["Front", "Slight Left", "Left", "Slight Right", "Right"].map((angle, i) => (
+                  <div key={i} className="flex flex-col items-center">
+                    <div className="bg-muted aspect-square w-full rounded-md mb-1 flex flex-col items-center justify-center">
+                      <Camera className="h-6 w-6 text-muted-foreground mb-1" />
+                      <Button variant="ghost" size="sm" className="h-8 px-2 text-xs">
+                        Upload
+                      </Button>
+                    </div>
+                    <span className="text-xs text-muted-foreground">{angle}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </form>
+        </Form>
+        
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button>Add to Database</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

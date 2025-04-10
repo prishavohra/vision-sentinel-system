@@ -68,32 +68,27 @@ const mockCameraFeeds: CameraFeed[] = [
   }
 ];
 
-export default function CameraGrid() {
+interface CameraGridProps {
+  onCameraSelect?: (camera: CameraFeed) => void;
+}
+
+export default function CameraGrid({ onCameraSelect }: CameraGridProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {mockCameraFeeds.map((camera) => (
-        <CameraCard key={camera.id} camera={camera} />
+        <CameraCard 
+          key={camera.id} 
+          camera={camera} 
+          onClick={() => onCameraSelect && onCameraSelect(camera)} 
+        />
       ))}
     </div>
   );
 }
 
-function CameraCard({ camera }: { camera: CameraFeed }) {
-  const getStatusBadge = (status: "wanted" | "suspect" | "missing") => {
-    switch(status) {
-      case "wanted":
-        return <Badge className="bg-red-600">WANTED</Badge>;
-      case "suspect":
-        return <Badge className="bg-amber-500">SUSPECT</Badge>;
-      case "missing":
-        return <Badge className="bg-blue-500">MISSING</Badge>;
-      default:
-        return null;
-    }
-  };
-  
+function CameraCard({ camera, onClick }: { camera: CameraFeed; onClick?: () => void }) {
   return (
-    <Card className="grid-card overflow-hidden">
+    <Card className="grid-card overflow-hidden cursor-pointer hover:ring-1 hover:ring-primary/40 transition-all" onClick={onClick}>
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
           <CardTitle className="text-base font-medium">{camera.name}</CardTitle>
@@ -146,7 +141,6 @@ function CameraCard({ camera }: { camera: CameraFeed }) {
                     <div className="font-semibold">{person.name}</div>
                   </div>
                   <div className="flex items-center justify-between gap-2">
-                    <div>{getStatusBadge(person.status)}</div>
                     <div className="text-xs opacity-75">ID: {person.id}</div>
                   </div>
                   <div className="text-xs">
