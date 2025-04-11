@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -51,7 +50,7 @@ import {
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { fetchKnownFaces, addKnownFace, deleteFace, updateFace } from "@/lib/apis";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 type FaceRecord = {
@@ -462,4 +461,3 @@ function AddFaceDialog({
     </Dialog>
   );
 }
-
