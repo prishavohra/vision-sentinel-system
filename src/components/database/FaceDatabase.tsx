@@ -1,5 +1,5 @@
-
 import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
@@ -45,81 +45,41 @@ import {
   User, 
   UserPlus,
   File,
-  Camera
+  Camera,
+  Loader2
 } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { fetchKnownFaces, addKnownFace, deleteFace, updateFace } from "@/lib/apis";
+import { toast } from "sonner";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 type FaceRecord = {
   id: string;
   name: string;
-  category: "employee" | "visitor" | "restricted" | "unknown";
-  dateAdded: string;
-  lastSeen: string | null;
-  thumbnail: string;
+  category?: "employee" | "visitor" | "restricted" | "unknown";
+  dateAdded?: string;
+  lastSeen?: string | null;
+  thumbnail?: string;
+  imageUrl: string;
 };
-
-// Mock data for known faces
-const mockFaces: FaceRecord[] = [
-  {
-    id: "p-1234",
-    name: "John Doe",
-    category: "employee",
-    dateAdded: "2023-01-15",
-    lastSeen: "2023-04-08T09:30:00Z",
-    thumbnail: "placeholder.svg"
-  },
-  {
-    id: "p-5678",
-    name: "Jane Smith",
-    category: "employee",
-    dateAdded: "2023-02-20",
-    lastSeen: "2023-04-08T10:20:10Z",
-    thumbnail: "placeholder.svg"
-  },
-  {
-    id: "p-9012",
-    name: "Alex Johnson",
-    category: "visitor",
-    dateAdded: "2023-03-05",
-    lastSeen: "2023-04-08T11:40:10Z",
-    thumbnail: "placeholder.svg"
-  },
-  {
-    id: "p-3456",
-    name: "Emily Davis",
-    category: "employee",
-    dateAdded: "2023-01-30",
-    lastSeen: "2023-04-07T15:20:00Z",
-    thumbnail: "placeholder.svg"
-  },
-  {
-    id: "p-7890",
-    name: "Michael Wilson",
-    category: "restricted",
-    dateAdded: "2023-02-10",
-    lastSeen: null,
-    thumbnail: "placeholder.svg"
-  },
-  {
-    id: "p-unknown-1",
-    name: "Unknown Person",
-    category: "unknown",
-    dateAdded: "2023-04-01",
-    lastSeen: "2023-04-08T08:15:30Z",
-    thumbnail: "placeholder.svg"
-  }
-];
 
 export default function FaceDatabase() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddFace, setShowAddFace] = useState(false);
   const [selectedFace, setSelectedFace] = useState<FaceRecord | null>(null);
+  const queryClient = useQueryClient();
+  
+  // Fetch known faces from the API
+  const { data: faces, isLoading, error } = useQuery({
+    queryKey: ['known-faces'],
+    queryFn: fetchKnownFaces
+  });
   
   // Filter faces based on search term
-  const filteredFaces = mockFaces.filter(face => {
+  const filteredFaces = faces?.filter(face => {
     return face.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      face.id.toLowerCase().includes(searchTerm.toLowerCase());
-  });
+      face.id?.toLowerCase().includes(searchTerm.toLowerCase());
+  }) || [];
   
   return (
     <div className="space-y-4">
@@ -131,7 +91,7 @@ export default function FaceDatabase() {
           <div>
             <h2 className="text-xl font-semibold">Known Faces Database</h2>
             <p className="text-sm text-muted-foreground">
-              {mockFaces.length} total records
+              {faces?.length || 0} total records
             </p>
           </div>
         </div>
@@ -155,48 +115,69 @@ export default function FaceDatabase() {
         </div>
       </div>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {filteredFaces.map((face) => (
-          <FaceCard 
-            key={face.id} 
-            face={face} 
-            onViewDetails={() => setSelectedFace(face)} 
-          />
-        ))}
-        
-        {/* Add new face card */}
-        <Card className="border-dashed">
-          <CardContent className="flex flex-col items-center justify-center h-full py-10">
-            <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
-              <Plus className="h-8 w-8 text-muted-foreground" />
+      {isLoading ? (
+        <div className="flex justify-center items-center p-12">
+          <Loader2 className="h-8 w-8 animate-spin text-sentinel-accent" />
+          <span className="ml-2 text-lg">Loading faces...</span>
+        </div>
+      ) : error ? (
+        <Alert variant="destructive">
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>
+            Failed to load faces from the database. Please try again later.
+          </AlertDescription>
+        </Alert>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {filteredFaces.map((face) => (
+            <FaceCard 
+              key={face.id} 
+              face={face} 
+              onViewDetails={() => setSelectedFace(face)} 
+            />
+          ))}
+          
+          {/* Add new face card */}
+          <Card className="border-dashed">
+            <CardContent className="flex flex-col items-center justify-center h-full py-10">
+              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
+                <Plus className="h-8 w-8 text-muted-foreground" />
+              </div>
+              <h3 className="font-medium mb-1">Add New Record</h3>
+              <p className="text-sm text-muted-foreground text-center mb-4">
+                Upload a new face to the database
+              </p>
+              <Button size="sm" onClick={() => setShowAddFace(true)}>
+                <Upload className="h-4 w-4 mr-2" />
+                Upload
+              </Button>
+            </CardContent>
+          </Card>
+          
+          {filteredFaces.length === 0 && (
+            <div className="col-span-full">
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center py-10">
+                  <User className="h-10 w-10 text-muted-foreground mb-4" />
+                  <p className="text-center text-muted-foreground">
+                    No faces found matching your search criteria.
+                  </p>
+                </CardContent>
+              </Card>
             </div>
-            <h3 className="font-medium mb-1">Add New Record</h3>
-            <p className="text-sm text-muted-foreground text-center mb-4">
-              Upload a new face to the database
-            </p>
-            <Button size="sm" onClick={() => setShowAddFace(true)}>
-              <Upload className="h-4 w-4 mr-2" />
-              Upload
-            </Button>
-          </CardContent>
-        </Card>
-        
-        {filteredFaces.length === 0 && (
-          <div className="col-span-full">
-            <Card>
-              <CardContent className="flex flex-col items-center justify-center py-10">
-                <User className="h-10 w-10 text-muted-foreground mb-4" />
-                <p className="text-center text-muted-foreground">
-                  No faces found matching your search criteria.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
       
       {/* Add Face Dialog */}
-      <AddFaceDialog open={showAddFace} onClose={() => setShowAddFace(false)} />
+      <AddFaceDialog 
+        open={showAddFace} 
+        onClose={() => setShowAddFace(false)} 
+        onAddFace={(faceData) => {
+          toast.success("Face added to database");
+          queryClient.invalidateQueries({ queryKey: ['known-faces'] });
+        }}
+      />
       
       {/* View Details Dialog */}
       {selectedFace && (
@@ -213,7 +194,7 @@ export default function FaceDatabase() {
               <div className="flex flex-col items-center">
                 <div className="w-40 h-40 rounded-full bg-muted overflow-hidden mb-4">
                   <img 
-                    src={selectedFace.thumbnail} 
+                    src={selectedFace.imageUrl || selectedFace.thumbnail} 
                     alt={selectedFace.name} 
                     className="w-full h-full object-cover"
                   />
@@ -226,7 +207,7 @@ export default function FaceDatabase() {
                 <div className="grid grid-cols-2 gap-4 pb-4 border-b">
                   <div>
                     <h4 className="text-sm text-muted-foreground">Date Added</h4>
-                    <p>{selectedFace.dateAdded}</p>
+                    <p>{selectedFace.dateAdded || 'Not available'}</p>
                   </div>
                   <div>
                     <h4 className="text-sm text-muted-foreground">Last Seen</h4>
@@ -307,7 +288,7 @@ function FaceCard({ face, onViewDetails }: { face: FaceRecord; onViewDetails: ()
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-full bg-muted overflow-hidden">
             <img 
-              src={face.thumbnail} 
+              src={face.imageUrl || face.thumbnail || "/placeholder.svg"} 
               alt={face.name} 
               className="w-full h-full object-cover"
             />
@@ -323,11 +304,11 @@ function FaceCard({ face, onViewDetails }: { face: FaceRecord; onViewDetails: ()
         <div className="text-sm space-y-1">
           <div className="flex justify-between">
             <span className="text-muted-foreground">Added:</span>
-            <span>{face.dateAdded}</span>
+            <span>{face.dateAdded || 'Not available'}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">Last seen:</span>
-            <span>{formatDate(face.lastSeen)}</span>
+            <span>{formatDate(face.lastSeen || null)}</span>
           </div>
         </div>
       </CardContent>
@@ -344,12 +325,48 @@ function FaceCard({ face, onViewDetails }: { face: FaceRecord; onViewDetails: ()
   );
 }
 
-function AddFaceDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
+function AddFaceDialog({ 
+  open, 
+  onClose,
+  onAddFace
+}: { 
+  open: boolean; 
+  onClose: () => void;
+  onAddFace?: (face: FaceRecord) => void;
+}) {
   const form = useForm({
     defaultValues: {
       name: "",
       id: "",
     }
+  });
+  
+  const queryClient = useQueryClient();
+  
+  const addFaceMutation = useMutation({
+    mutationFn: (faceData: { name: string; imageUrl: string; id?: string }) => {
+      return addKnownFace(faceData);
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['known-faces'] });
+      if (onAddFace) onAddFace(data);
+      onClose();
+      toast.success("New face added to database");
+    },
+    onError: (error) => {
+      toast.error(`Failed to add face: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  });
+  
+  const handleSubmit = form.handleSubmit((data) => {
+    // For now, use a placeholder image since we don't have actual image upload
+    const faceData = {
+      name: data.name,
+      id: data.id,
+      imageUrl: "/placeholder.svg" // Placeholder until we implement actual image upload
+    };
+    
+    addFaceMutation.mutate(faceData);
   });
   
   return (
@@ -363,7 +380,7 @@ function AddFaceDialog({ open, onClose }: { open: boolean; onClose: () => void }
         </DialogHeader>
         
         <Form {...form}>
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
@@ -405,7 +422,7 @@ function AddFaceDialog({ open, onClose }: { open: boolean; onClose: () => void }
                   <div key={i} className="flex flex-col items-center">
                     <div className="bg-muted aspect-square w-full rounded-md mb-1 flex flex-col items-center justify-center">
                       <Camera className="h-6 w-6 text-muted-foreground mb-1" />
-                      <Button variant="ghost" size="sm" className="h-8 px-2 text-xs">
+                      <Button type="button" variant="ghost" size="sm" className="h-8 px-2 text-xs">
                         Upload
                       </Button>
                     </div>
@@ -414,13 +431,32 @@ function AddFaceDialog({ open, onClose }: { open: boolean; onClose: () => void }
                 ))}
               </div>
             </div>
+            
+            <DialogFooter>
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={onClose}
+                disabled={addFaceMutation.isPending}
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="submit"
+                disabled={addFaceMutation.isPending}
+              >
+                {addFaceMutation.isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Adding...
+                  </>
+                ) : (
+                  "Add to Database"
+                )}
+              </Button>
+            </DialogFooter>
           </form>
         </Form>
-        
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
-          <Button>Add to Database</Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

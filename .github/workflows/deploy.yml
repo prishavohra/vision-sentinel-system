@@ -1,0 +1,34 @@
+
+name: 🚀 Auto Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main  # change if you're using a different branch
+
+jobs:
+  deploy:
+    name: 🔄 Deploy on EC2 Instance
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v3
+
+    - name: 🔐 Set up SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H 13.203.207.193 >> ~/.ssh/known_hosts
+
+    - name: 🚀 Deploy via SSH
+      run: |
+        ssh ubuntu@13.203.207.193 << 'EOF'
+          cd ~/vision-sentinel-system
+          git pull origin main
+          echo "VITE_API_URL=${{ secrets.BACKEND_API_URL || 'http://localhost:5000' }}" > .env
+          npm install
+          npm run build
+          pm2 restart vision-app || echo "PM2 not set yet"
+        EOF
