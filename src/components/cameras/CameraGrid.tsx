@@ -21,48 +21,33 @@ type CameraFeed = {
   name: string;
   location: string;
   status: "online" | "offline";
+  streamUrl: string;
   detectedPersons: Person[];
 };
 
-// Real-time camera feeds with ngrok links
 const realTimeCameraFeeds: CameraFeed[] = [
   {
     id: "cam-001",
     name: "Main Entrance",
     location: "North Wing",
     status: "online",
-    detectedPersons: [
-      {
-        id: "p-1234",
-        name: "John Doe",
-        confidence: 0.94,
-        timestamp: new Date().toISOString(),
-        status: "wanted",
-        boundingBox: { x: 120, y: 80, width: 100, height: 120 }
-      }
-    ]
+    streamUrl: "https://f464-202-71-156-66.ngrok-free.app/video_feed/cam1",
+    detectedPersons: []
   },
   {
     id: "cam-002",
     name: "Parking Lot",
     location: "South Wing",
     status: "online",
-    detectedPersons: [
-      {
-        id: "p-5678",
-        name: "Jane Smith",
-        confidence: 0.88,
-        timestamp: new Date().toISOString(),
-        status: "suspect",
-        boundingBox: { x: 200, y: 120, width: 90, height: 110 }
-      }
-    ]
+    streamUrl: "https://f464-202-71-156-66.ngrok-free.app/video_feed/cam2",
+    detectedPersons: []
   },
   {
     id: "cam-003",
     name: "Security Gate",
     location: "East Wing",
     status: "online",
+    streamUrl: "https://f464-202-71-156-66.ngrok-free.app/video_feed/cam3",
     detectedPersons: []
   }
 ];
@@ -86,15 +71,6 @@ export default function CameraGrid({ onCameraSelect }: CameraGridProps) {
 }
 
 function CameraCard({ camera, onClick }: { camera: CameraFeed; onClick?: () => void }) {
-  // Map camera.id to the Flask backend stream ID (like cam1, cam2, cam3)
-  const streamIdMap: Record<string, string> = {
-    "cam-001": "cam1",
-    "cam-002": "cam2",
-    "cam-003": "cam3"
-  };
-
-  const streamId = streamIdMap[camera.id] || "cam1"; // default fallback
-
   return (
     <Card
       className="grid-card overflow-hidden cursor-pointer hover:ring-1 hover:ring-primary/40 transition-all"
@@ -123,16 +99,14 @@ function CameraCard({ camera, onClick }: { camera: CameraFeed; onClick?: () => v
                 </div>
               </div>
 
-              {/* Live video stream using dynamic stream ID */}
               <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
                 <img 
-                  src={`https://f464-202-71-156-66.ngrok-free.app/video_feed/${streamId}`} 
+                  src={camera.streamUrl} 
                   alt={`Live feed from ${camera.name}`} 
                   className="w-full h-full object-cover" 
                 />
               </div>
 
-              {/* Face detection overlays */}
               {camera.detectedPersons.map((person) => (
                 <div 
                   key={person.id}
@@ -146,7 +120,6 @@ function CameraCard({ camera, onClick }: { camera: CameraFeed; onClick?: () => v
                 ></div>
               ))}
 
-              {/* Person identification tags */}
               {camera.detectedPersons.map((person) => (
                 <div 
                   key={person.id}
@@ -165,7 +138,6 @@ function CameraCard({ camera, onClick }: { camera: CameraFeed; onClick?: () => v
                 </div>
               ))}
 
-              {/* Scanning animation effect */}
               <div className="scanning-effect absolute inset-0 border border-green-400/20 animate-pulse"></div>
             </>
           ) : (
