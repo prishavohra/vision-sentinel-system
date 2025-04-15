@@ -1,16 +1,28 @@
 
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Camera } from "lucide-react";
+import { RefreshCw, Camera, VideoOff } from "lucide-react";
 import CameraGrid from "@/components/cameras/CameraGrid";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 export default function LiveCameras() {
   const [key, setKey] = useState(0);
   const [selectedCamera, setSelectedCamera] = useState<any>(null);
+  const [dialogImageError, setDialogImageError] = useState(false);
   
   const handleRefresh = () => {
     setKey(prevKey => prevKey + 1);
+    setDialogImageError(false);
+  };
+  
+  const handleDialogClose = () => {
+    setSelectedCamera(null);
+    setDialogImageError(false);
+  };
+  
+  const handleDialogImageError = () => {
+    console.log(`Failed to load dialog stream for camera: ${selectedCamera?.id}`);
+    setDialogImageError(true);
   };
   
   return (
@@ -53,10 +65,13 @@ export default function LiveCameras() {
       <CameraGrid key={key} onCameraSelect={setSelectedCamera} />
 
       {selectedCamera && (
-        <Dialog open={!!selectedCamera} onOpenChange={() => setSelectedCamera(null)}>
+        <Dialog open={!!selectedCamera} onOpenChange={handleDialogClose}>
           <DialogContent className="max-w-4xl">
             <DialogHeader>
               <DialogTitle>{selectedCamera.name} - {selectedCamera.location}</DialogTitle>
+              <DialogDescription>
+                Camera ID: {selectedCamera.id} • Status: {selectedCamera.status}
+              </DialogDescription>
             </DialogHeader>
             <div className="w-full aspect-video bg-black relative">
               <div className="absolute top-2 left-2 z-10">
@@ -67,13 +82,25 @@ export default function LiveCameras() {
               </div>
               
               <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
-                <Camera className="h-24 w-24 text-gray-600" />
+                {!dialogImageError ? (
+                  <img 
+                    src={selectedCamera.streamUrl} 
+                    alt={`Live feed from ${selectedCamera.name}`}
+                    className="w-full h-full object-cover"
+                    onError={handleDialogImageError}
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-full w-full">
+                    <Camera className="h-24 w-24 text-gray-600 mb-2" />
+                    <span className="text-gray-500 text-lg">Stream unavailable</span>
+                  </div>
+                )}
               </div>
               
               {selectedCamera.detectedPersons.map((person: any) => (
                 <div 
                   key={person.id}
-                  className="face-highlight"
+                  className="face-highlight absolute border-2 border-red-500"
                   style={{
                     left: `${person.boundingBox.x / 2}px`,
                     top: `${person.boundingBox.y / 2}px`,
@@ -98,10 +125,7 @@ export default function LiveCameras() {
                 </div>
               ))}
               
-              <div className="scanning-effect"></div>
-            </div>
-            <div className="text-sm text-muted-foreground mt-2">
-              Camera ID: {selectedCamera.id}
+              <div className="scanning-effect absolute inset-0 border border-green-400/20 animate-pulse"></div>
             </div>
           </DialogContent>
         </Dialog>

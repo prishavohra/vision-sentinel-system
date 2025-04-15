@@ -1,6 +1,8 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Video, VideoOff, AlertTriangle } from "lucide-react";
+import { Video, VideoOff, AlertTriangle, Camera } from "lucide-react";
+import { useState } from "react";
 
 type Person = {
   id: string;
@@ -71,6 +73,13 @@ export default function CameraGrid({ onCameraSelect }: CameraGridProps) {
 }
 
 function CameraCard({ camera, onClick }: { camera: CameraFeed; onClick?: () => void }) {
+  const [imageError, setImageError] = useState(false);
+  
+  const handleImageError = () => {
+    console.log(`Failed to load stream for camera: ${camera.id}`);
+    setImageError(true);
+  };
+
   return (
     <Card
       className="grid-card overflow-hidden cursor-pointer hover:ring-1 hover:ring-primary/40 transition-all"
@@ -100,11 +109,19 @@ function CameraCard({ camera, onClick }: { camera: CameraFeed; onClick?: () => v
               </div>
 
               <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
-                <img 
-                  src={camera.streamUrl} 
-                  alt={`Live feed from ${camera.name}`} 
-                  className="w-full h-full object-cover" 
-                />
+                {!imageError ? (
+                  <img 
+                    src={camera.streamUrl} 
+                    alt={`Live feed from ${camera.name}`}
+                    className="w-full h-full object-cover"
+                    onError={handleImageError}
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-full w-full">
+                    <Camera className="h-12 w-12 text-gray-600 mb-2" />
+                    <span className="text-gray-500 text-sm">Stream unavailable</span>
+                  </div>
+                )}
               </div>
 
               {camera.detectedPersons.map((person) => (
