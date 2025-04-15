@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Video, VideoOff, AlertTriangle } from "lucide-react";
@@ -25,10 +24,10 @@ type CameraFeed = {
   detectedPersons: Person[];
 };
 
-// Mock data for camera feeds - exactly 3 cameras
-const mockCameraFeeds: CameraFeed[] = [
+// Real-time camera feeds with ngrok links
+const realTimeCameraFeeds: CameraFeed[] = [
   {
-    id: "cam-001",
+    id: "cam-001", // This is your first camera ID
     name: "Main Entrance",
     location: "North Wing",
     status: "online",
@@ -44,7 +43,7 @@ const mockCameraFeeds: CameraFeed[] = [
     ]
   },
   {
-    id: "cam-002",
+    id: "cam-002", // This is your second camera ID
     name: "Parking Lot",
     location: "South Wing",
     status: "online",
@@ -60,7 +59,7 @@ const mockCameraFeeds: CameraFeed[] = [
     ]
   },
   {
-    id: "cam-003",
+    id: "cam-003", // This is your third camera ID
     name: "Security Gate",
     location: "East Wing",
     status: "online",
@@ -75,7 +74,7 @@ interface CameraGridProps {
 export default function CameraGrid({ onCameraSelect }: CameraGridProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {mockCameraFeeds.map((camera) => (
+      {realTimeCameraFeeds.map((camera) => (
         <CameraCard 
           key={camera.id} 
           camera={camera} 
@@ -111,9 +110,13 @@ function CameraCard({ camera, onClick }: { camera: CameraFeed; onClick?: () => v
                 </div>
               </div>
               
-              {/* Camera feed placeholder */}
+              {/* Replace this with ngrok video feed */}
               <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
-                <Video className="h-12 w-12 text-gray-600" />
+                <img 
+                  src={`https://f464-202-71-156-66.ngrok-free.app/video_feed/cam1`} 
+                  alt={`Live feed from ${camera.name}`} 
+                  className="w-full h-full object-cover" 
+                />
               </div>
               
               {/* Face detection overlays */}
