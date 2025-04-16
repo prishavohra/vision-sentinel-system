@@ -1,4 +1,3 @@
-
 const express = require('express');
 const cors = require('cors');
 const { MongoClient } = require('mongodb');
@@ -22,17 +21,21 @@ app.use(express.json());
 
 // Initialize database with required collections
 async function initializeDatabase() {
+  let client;
   try {
-    const client = new MongoClient(mongoURI);
+    console.log('Connecting to MongoDB Atlas...');
+    client = new MongoClient(mongoURI);
     await client.connect();
+    console.log('Connected to MongoDB Atlas successfully!');
     
     const db = client.db('facialRecognition');
     
     // Check if admin user exists, if not, create one
     const usersCollection = db.collection('users');
-    const adminUser = await usersCollection.findOne({ role: 'Administrator' });
+    const adminUser = await usersCollection.findOne({ username: 'admin' });
     
     if (!adminUser) {
+      console.log('No admin user found. Creating default admin user...');
       const bcrypt = require('bcryptjs');
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash('admin123', salt);
@@ -48,13 +51,19 @@ async function initializeDatabase() {
         lastLogin: null
       });
       
-      console.log('Default admin user created');
+      console.log('Default admin user created successfully');
+    } else {
+      console.log('Admin user already exists:', adminUser.username);
     }
     
-    await client.close();
-    console.log('Database initialized');
+    return client;
   } catch (err) {
     console.error('Database initialization error:', err);
+    if (client) {
+      await client.close();
+    }
+    // Rethrow the error to be caught by the caller
+    throw err;
   }
 }
 
@@ -69,5 +78,12 @@ app.use('/api/known-faces', knownFacesRoutes);
 // Start server
 app.listen(PORT, async () => {
   console.log(`Server running on port ${PORT}`);
-  await initializeDatabase();
+  try {
+    const client = await initializeDatabase();
+    // Keep the connection open for the server lifetime
+    console.log('Database initialized successfully');
+  } catch (err) {
+    console.error('Failed to initialize database:', err);
+    // Continue running the server even if DB init fails
+  }
 });

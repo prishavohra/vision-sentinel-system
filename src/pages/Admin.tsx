@@ -11,7 +11,7 @@ import { toast } from "@/components/ui/use-toast";
 export default function Admin() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState("admin");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
   
@@ -26,6 +26,7 @@ export default function Admin() {
       } catch (error) {
         // Token invalid or expired
         localStorage.removeItem('adminToken');
+        console.error("Auth check error:", error);
       } finally {
         setIsLoading(false);
       }
@@ -40,14 +41,15 @@ export default function Admin() {
     
     try {
       setIsLoading(true);
+      console.log("Attempting login with:", { username, password });
       await loginAdmin({ username, password });
       setIsLoggedIn(true);
       toast({
         title: "Login successful",
         description: "Welcome to the admin panel",
       });
-    } catch (error) {
-      setLoginError("Invalid username or password");
+    } catch (error: any) {
+      setLoginError(error.message || "Invalid username or password");
       console.error("Login error:", error);
     } finally {
       setIsLoading(false);

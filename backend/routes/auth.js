@@ -14,6 +14,8 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
   
+  console.log(`Login attempt for user: ${username}`);
+  
   try {
     const client = new MongoClient(mongoURI);
     await client.connect();
@@ -25,6 +27,7 @@ router.post('/login', async (req, res) => {
     const user = await usersCollection.findOne({ username });
     
     if (!user) {
+      console.log(`User not found: ${username}`);
       await client.close();
       return res.status(401).json({ message: 'Invalid credentials' });
     }
@@ -33,15 +36,24 @@ router.post('/login', async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     
     if (!isMatch) {
+      console.log(`Invalid password for user: ${username}`);
       await client.close();
       return res.status(401).json({ message: 'Invalid credentials' });
     }
+    
+    console.log(`Login successful for user: ${username}`);
     
     // Create JWT token
     const token = jwt.sign(
       { id: user._id, username: user.username, role: user.role },
       JWT_SECRET,
       { expiresIn: '24h' }
+    );
+    
+    // Update last login time
+    await usersCollection.updateOne(
+      { _id: user._id },
+      { $set: { lastLogin: new Date() } }
     );
     
     await client.close();
