@@ -32,7 +32,7 @@ const realTimeCameraFeeds: CameraFeed[] = [
     name: "Main Entrance",
     location: "North Wing",
     status: "online",
-    streamUrl: "https://f464-202-71-156-66.ngrok-free.app/video_feed/cam1",
+    streamUrl: "https://b92d-202-71-156-66.ngrok-free.app/video_feed/cam1",
     detectedPersons: []
   },
   {
@@ -40,7 +40,7 @@ const realTimeCameraFeeds: CameraFeed[] = [
     name: "Parking Lot",
     location: "South Wing",
     status: "online",
-    streamUrl: "https://f464-202-71-156-66.ngrok-free.app/video_feed/cam2",
+    streamUrl: "https://b92d-202-71-156-66.ngrok-free.app/video_feed/cam2",
     detectedPersons: []
   },
   {
