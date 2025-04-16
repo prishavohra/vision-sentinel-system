@@ -107,11 +107,6 @@ export default function FaceDatabase() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          
-          <Button className="flex items-center gap-2" onClick={() => setShowAddFace(true)}>
-            <UserPlus className="h-4 w-4" />
-            <span>Add New</span>
-          </Button>
         </div>
       </div>
       
@@ -137,23 +132,6 @@ export default function FaceDatabase() {
             />
           ))}
           
-          {/* Add new face card */}
-          <Card className="border-dashed">
-            <CardContent className="flex flex-col items-center justify-center h-full py-10">
-              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
-                <Plus className="h-8 w-8 text-muted-foreground" />
-              </div>
-              <h3 className="font-medium mb-1">Add New Record</h3>
-              <p className="text-sm text-muted-foreground text-center mb-4">
-                Upload a new face to the database
-              </p>
-              <Button size="sm" onClick={() => setShowAddFace(true)}>
-                <Upload className="h-4 w-4 mr-2" />
-                Upload
-              </Button>
-            </CardContent>
-          </Card>
-          
           {filteredFaces.length === 0 && (
             <div className="col-span-full">
               <Card>
@@ -168,16 +146,6 @@ export default function FaceDatabase() {
           )}
         </div>
       )}
-      
-      {/* Add Face Dialog */}
-      <AddFaceDialog 
-        open={showAddFace} 
-        onClose={() => setShowAddFace(false)} 
-        onAddFace={(faceData) => {
-          toast.success("Face added to database");
-          queryClient.invalidateQueries({ queryKey: ['known-faces'] });
-        }}
-      />
       
       {/* View Details Dialog */}
       {selectedFace && (
@@ -322,142 +290,5 @@ function FaceCard({ face, onViewDetails }: { face: FaceRecord; onViewDetails: ()
         </Button>
       </CardFooter>
     </Card>
-  );
-}
-
-function AddFaceDialog({ 
-  open, 
-  onClose,
-  onAddFace
-}: { 
-  open: boolean; 
-  onClose: () => void;
-  onAddFace?: (face: FaceRecord) => void;
-}) {
-  const form = useForm({
-    defaultValues: {
-      name: "",
-      id: "",
-    }
-  });
-  
-  const queryClient = useQueryClient();
-  
-  const addFaceMutation = useMutation({
-    mutationFn: (faceData: { name: string; imageUrl: string; id?: string }) => {
-      return addKnownFace(faceData);
-    },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['known-faces'] });
-      if (onAddFace) onAddFace(data);
-      onClose();
-      toast.success("New face added to database");
-    },
-    onError: (error) => {
-      toast.error(`Failed to add face: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
-  });
-  
-  const handleSubmit = form.handleSubmit((data) => {
-    // For now, use a placeholder image since we don't have actual image upload
-    const faceData = {
-      name: data.name,
-      id: data.id,
-      imageUrl: "/placeholder.svg" // Placeholder until we implement actual image upload
-    };
-    
-    addFaceMutation.mutate(faceData);
-  });
-  
-  return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>Add New Face</DialogTitle>
-          <DialogDescription>
-            Fill out the information below to add a new face to the database
-          </DialogDescription>
-        </DialogHeader>
-        
-        <Form {...form}>
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Full Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter full name" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>ID Number</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter ID number" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <h4 className="text-sm font-medium">Face Images</h4>
-              <p className="text-xs text-muted-foreground mb-2">
-                Upload 5 images from different angles for better recognition
-              </p>
-              
-              <div className="grid grid-cols-5 gap-2">
-                {["Front", "Slight Left", "Left", "Slight Right", "Right"].map((angle, i) => (
-                  <div key={i} className="flex flex-col items-center">
-                    <div className="bg-muted aspect-square w-full rounded-md mb-1 flex flex-col items-center justify-center">
-                      <Camera className="h-6 w-6 text-muted-foreground mb-1" />
-                      <Button type="button" variant="ghost" size="sm" className="h-8 px-2 text-xs">
-                        Upload
-                      </Button>
-                    </div>
-                    <span className="text-xs text-muted-foreground">{angle}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            
-            <DialogFooter>
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={onClose}
-                disabled={addFaceMutation.isPending}
-              >
-                Cancel
-              </Button>
-              <Button 
-                type="submit"
-                disabled={addFaceMutation.isPending}
-              >
-                {addFaceMutation.isPending ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Adding...
-                  </>
-                ) : (
-                  "Add to Database"
-                )}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
   );
 }
