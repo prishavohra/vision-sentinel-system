@@ -1,10 +1,14 @@
 
-const express = require('express');
+import express from 'express';
+import bcrypt from 'bcryptjs';
+import { MongoClient, ObjectId } from 'mongodb';
+import { authenticateToken } from './auth.js';
+import dotenv from 'dotenv';
+
+// Initialize environment variables
+dotenv.config();
+
 const router = express.Router();
-const bcrypt = require('bcryptjs');
-const { MongoClient, ObjectId } = require('mongodb');
-const { authenticateToken } = require('./auth');
-require('dotenv').config();
 
 // MongoDB connection
 const mongoURI = process.env.MONGO_URI;
@@ -140,4 +144,4 @@ router.delete('/:id', authenticateToken, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

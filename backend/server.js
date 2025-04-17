@@ -1,16 +1,20 @@
 
-const express = require('express');
-const cors = require('cors');
-const { MongoClient } = require('mongodb');
-require('dotenv').config();
+import express from 'express';
+import cors from 'cors';
+import { MongoClient } from 'mongodb';
+import dotenv from 'dotenv';
+import bcrypt from 'bcryptjs';
 
 // Import routes
-const authRoutes = require('./routes/auth'); // Import as an object which contains router
-const userRoutes = require('./routes/users');
-const statsRoutes = require('./routes/stats');
-const reportRoutes = require('./routes/reports');
-const settingsRoutes = require('./routes/settings');
-const knownFacesRoutes = require('./routes/knownFaces');
+import * as authRoutes from './routes/auth.js';
+import userRoutes from './routes/users.js';
+import statsRoutes from './routes/stats.js';
+import reportRoutes from './routes/reports.js';
+import settingsRoutes from './routes/settings.js';
+import knownFacesRoutes from './routes/knownFaces.js';
+
+// Initialize environment variables
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -41,7 +45,6 @@ async function initializeDatabase() {
     
     if (!adminUser) {
       console.log('No admin user found. Creating default admin user...');
-      const bcrypt = require('bcryptjs');
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash('admin123', salt);
       

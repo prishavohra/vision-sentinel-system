@@ -1,9 +1,13 @@
 
-const express = require('express');
+import express from 'express';
+import { MongoClient, ObjectId } from 'mongodb';
+import { authenticateToken } from './auth.js';
+import dotenv from 'dotenv';
+
+// Initialize environment variables
+dotenv.config();
+
 const router = express.Router();
-const { MongoClient, ObjectId } = require('mongodb');
-const { authenticateToken } = require('./auth');
-require('dotenv').config();
 
 // MongoDB connection
 const mongoURI = process.env.MONGO_URI;
@@ -86,4 +90,4 @@ router.post('/generate', authenticateToken, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

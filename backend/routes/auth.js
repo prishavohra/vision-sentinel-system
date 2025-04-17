@@ -1,10 +1,14 @@
 
-const express = require('express');
+import express from 'express';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { MongoClient, ObjectId } from 'mongodb';
+import dotenv from 'dotenv';
+
+// Initialize environment variables
+dotenv.config();
+
 const router = express.Router();
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const { MongoClient, ObjectId } = require('mongodb');
-require('dotenv').config();
 
 // MongoDB connection
 const mongoURI = process.env.MONGO_URI;
@@ -132,4 +136,4 @@ router.get('/me', authenticateToken, async (req, res) => {
 });
 
 // Fix the exports to make sure both router and authenticateToken are correctly exported
-module.exports = { router, authenticateToken };
+export { router, authenticateToken };

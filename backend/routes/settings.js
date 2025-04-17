@@ -1,9 +1,13 @@
 
-const express = require('express');
+import express from 'express';
+import { MongoClient } from 'mongodb';
+import { authenticateToken } from './auth.js';
+import dotenv from 'dotenv';
+
+// Initialize environment variables
+dotenv.config();
+
 const router = express.Router();
-const { MongoClient } = require('mongodb');
-const { authenticateToken } = require('./auth');
-require('dotenv').config();
 
 // MongoDB connection
 const mongoURI = process.env.MONGO_URI;
@@ -126,4 +130,4 @@ router.post('/regenerate-api-key', authenticateToken, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
