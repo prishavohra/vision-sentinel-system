@@ -131,4 +131,5 @@ router.get('/me', authenticateToken, async (req, res) => {
   }
 });
 
+// Fix the exports to make sure both router and authenticateToken are correctly exported
 module.exports = { router, authenticateToken };

@@ -53,7 +53,7 @@ export default function Admin() {
     } catch (error: any) {
       console.error("Login error:", error);
       
-      if (error.message === "Failed to fetch") {
+      if (error.message === "Network error. Please check your server connection.") {
         setConnectionError(true);
         setLoginError("Cannot connect to server. Please make sure your backend server is running.");
       } else {
