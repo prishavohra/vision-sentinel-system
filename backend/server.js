@@ -1,10 +1,11 @@
+
 const express = require('express');
 const cors = require('cors');
 const { MongoClient } = require('mongodb');
 require('dotenv').config();
 
 // Import routes
-const { router: authRoutes } = require('./routes/auth');
+const authRoutes = require('./routes/auth'); // Import as an object which contains router
 const userRoutes = require('./routes/users');
 const statsRoutes = require('./routes/stats');
 const reportRoutes = require('./routes/reports');
@@ -71,8 +72,8 @@ async function initializeDatabase() {
   }
 }
 
-// Routes
-app.use('/api/auth', authRoutes);
+// Routes - Fix to use the correct auth routes object format
+app.use('/api/auth', authRoutes.router); // Use .router from the exported object
 app.use('/api/users', userRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/reports', reportRoutes);
