@@ -1,0 +1,31 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main  # Change to 'master' or any branch you prefer
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest  # This tells the job to run on a GitHub-hosted runner
+
+    steps:
+    # Step 1: Checkout code from the repository
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # Step 2: Set up SSH to connect to the EC2 instance
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}  # Add your secret here
+
+    # Step 3: Deploy to EC2
+    - name: Deploy to EC2 Instance
+      run: |
+        ssh -o StrictHostKeyChecking=no ec2-user@13.203.219.31 << 'EOF'
+          cd /path/to/your/project  # Change this path to the directory of your project on EC2
+          git pull origin main  # Pull the latest changes from the 'main' branch
+          # Restart your application service, if necessary
+          sudo systemctl restart your-flask-app.service  # Modify this to your app's service name
+        EOF
