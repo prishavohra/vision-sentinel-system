@@ -1,25 +1,36 @@
-
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 // Auth APIs
 export const loginAdmin = async (credentials: { username: string; password: string }) => {
-  const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(credentials),
-  });
+  console.log(`Attempting login at: ${API_BASE_URL}/api/auth/login`);
   
-  if (!res.ok) {
-    const errorData = await res.json();
-    throw new Error(errorData.message || 'Login failed');
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(credentials),
+    });
+    
+    console.log('Login response status:', res.status);
+    
+    if (!res.ok) {
+      const errorData = await res.json();
+      console.error('Login response error:', errorData);
+      throw new Error(errorData.message || 'Login failed');
+    }
+    
+    const data = await res.json();
+    console.log('Login successful, token received');
+    
+    // Store token in localStorage
+    localStorage.setItem('adminToken', data.token);
+    return data;
+  } catch (error) {
+    console.error('Login fetch error:', error);
+    throw error;
   }
-  
-  const data = await res.json();
-  // Store token in localStorage
-  localStorage.setItem('adminToken', data.token);
-  return data;
 };
 
 export const getCurrentUser = async () => {

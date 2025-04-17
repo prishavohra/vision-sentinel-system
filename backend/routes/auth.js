@@ -17,14 +17,20 @@ router.post('/login', async (req, res) => {
   console.log(`Login attempt for user: ${username}`);
   
   try {
+    console.log('Connecting to MongoDB Atlas...');
+    console.log(`Connection URI: ${mongoURI.substring(0, 20)}...`);
+    
     const client = new MongoClient(mongoURI);
     await client.connect();
+    console.log('Connected to MongoDB Atlas successfully!');
     
     const db = client.db('facialRecognition');
     const usersCollection = db.collection('users');
     
     // Find user by username
     const user = await usersCollection.findOne({ username });
+    
+    console.log(`User lookup result: ${user ? 'Found' : 'Not found'}`);
     
     if (!user) {
       console.log(`User not found: ${username}`);
@@ -34,6 +40,8 @@ router.post('/login', async (req, res) => {
     
     // Check password
     const isMatch = await bcrypt.compare(password, user.password);
+    
+    console.log(`Password verification result: ${isMatch ? 'Match' : 'No match'}`);
     
     if (!isMatch) {
       console.log(`Invalid password for user: ${username}`);
@@ -69,8 +77,8 @@ router.post('/login', async (req, res) => {
       }
     });
   } catch (err) {
-    console.error('Login error:', err);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Login error details:', err);
+    res.status(500).json({ message: 'Server error', details: err.message });
   }
 });
 
