@@ -1,26 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import AlertList from '@/components/AlertList';
+import React from "react";
+import AlertList from "@/components/alerts/AlertList";
 
-interface Alert {
-  name: string;
-  camera: string;
-  timestamp: string;
-}
-
-export default function AlertsPage() {
-  const [alerts, setAlerts] = useState<Alert[]>([]);
-
-  useEffect(() => {
-    fetch('http://localhost:5001/api/alerts')
-      .then(res => res.json())
-      .then(data => setAlerts(data.alerts))
-      .catch(err => console.error('Failed to fetch alerts:', err));
-  }, []);
-
+const AlertsPage: React.FC = () => {
   return (
-    <div className="px-6 py-8">
-      <h1 className="text-2xl font-bold mb-4 text-white">Live Alerts</h1>
-      <AlertList alerts={alerts} />
+    <div className="max-w-7xl mx-auto py-6 px-4">
+      <h1 className="text-2xl font-bold mb-6">Live Alerts</h1>
+      <AlertList />
     </div>
   );
-}
+};
+
+export default AlertsPage;
